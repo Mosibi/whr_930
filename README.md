@@ -12,14 +12,15 @@ input_number:
     step: 1
     mode: box
 
-alias: Ventilation level slider moved in GUI
-trigger:
-  platform: state
-  entity_id: input_number.set_wtw_ventilation_level
-action:
-  service: mqtt.publish
-  data_template:
-    topic: house/2/attic/wtw/set_ventilation_level
-    retain: false
-    payload: "{{ states('input_number.set_wtw_ventilation_level') | int }}"
+automation:
+  - alias: Ventilation level slider moved in GUI
+    trigger:
+      platform: state
+      entity_id: input_number.set_wtw_ventilation_level
+    action:
+      service: mqtt.publish
+      data_template:
+        topic: house/2/attic/wtw/set_ventilation_level
+        retain: false
+        payload: "{{ states('input_number.set_wtw_ventilation_level') | int }}"
 ```
