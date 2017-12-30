@@ -23,4 +23,13 @@ automation:
         topic: house/2/attic/wtw/set_ventilation_level
         retain: false
         payload: "{{ states('input_number.set_wtw_ventilation_level') | int }}"
+
+sensor:
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/ventilation_level"
+    name: "WTW Ventilation Level"
+    qos: 0
 ```
+
+![Image](http://blog.mosibi.nl/wp-content/uploads/2017/12/whr930_homeassistant.png)
+
