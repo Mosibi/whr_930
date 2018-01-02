@@ -2,6 +2,8 @@ See http://blog.mosibi.nl/?p=736 for more info about this script.
 
 ## Home Assistant configuration
 
+![Image](http://blog.mosibi.nl/wp-content/uploads/2018/01/whr930_homeassistant_2.png)
+
 ```
 input_number:
   set_wtw_ventilation_level:
@@ -70,6 +72,3 @@ sensor:
     qos: 0
     unit_of_measurement: '%'
 ```
-
-![Image](http://blog.mosibi.nl/wp-content/uploads/2018/01/whr930_homeassistant_2.png)
-
