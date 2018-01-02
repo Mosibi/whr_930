@@ -22,6 +22,21 @@ def warning_msg(message):
 def info_msg(message):
     print '{0} INFO: {1}'.format(time.strftime("%d-%m-%Y %H:%M:%S", time.gmtime()), message)
 
+def debug_data(serial_data):
+    print 'Ack           : {0} {1}'.format(serial_data[0], serial_data[1])
+    print 'Start         : {0} {1}'.format(serial_data[2], serial_data[3])
+    print 'Command       : {0} {1}'.format(serial_data[4], serial_data[5])
+    print 'Nr data bytes : {0} (integer {1})'.format(serial_data[6], int(serial_data[6], 16))
+
+    n = 1
+    while n <= int(serial_data[6], 16):
+        print 'Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}'.format(n, serial_data[n+6], int(serial_data[n + 6], 16), n + 6)
+
+        n += 1
+    
+    print 'Checksum      : {0}'.format(serial_data[-2])
+    print 'End           : {0} {1}'.format(serial_data[-1], serial_data[-0])        
+
 def on_message(client, userdata, message):
     if message.topic == 'house/2/attic/wtw/set_ventilation_level':
         if int(message.payload) >= 0 and int(message.payload) <= 3:
@@ -88,9 +103,18 @@ def get_ventilation_status():
         ReturnAirLevel = int(data[13], 16)
         SupplyAirLevel = int(data[14], 16)
         FanLevel = int(data[15], 16) - 1
+        IntakeFanActive = int(data[16], 16)
 
+        if IntakeFanActive == 1:
+            StrIntakeFanActive = 'Yes'
+        elif IntakeFanActive == 0:
+            StrIntakeFanActive = 'No'
+        else:
+            StrIntakeFanActive = 'Unknown'
+            
         publish_message(msg=FanLevel, mqtt_path='house/2/attic/wtw/ventilation_level')
-        debug_msg('ReturnAirLevel: {}, SupplyAirLevel: {}, FanLevel: {}'.format(ReturnAirLevel, SupplyAirLevel, FanLevel))
+        publish_message(msg=StrIntakeFanActive, mqtt_path='house/2/attic/wtw/intake_fan_active')
+        debug_msg('ReturnAirLevel: {}, SupplyAirLevel: {}, FanLevel: {}, IntakeFanActive: {}'.format(ReturnAirLevel, SupplyAirLevel, FanLevel, StrIntakeFanActive))
 
 def get_fan_status():
     # 0x07 0xF0 0x00 0x0B 0x00 0xB8 0x07 0x0F 
@@ -114,20 +138,6 @@ def get_fan_status():
 
         debug_msg('IntakeFanSpeed {0}%, ExhaustFanSpeed {1}%, IntakeAirRPM {2}, ExhaustAirRPM {3}'.format(IntakeFanSpeed,ExhaustFanSpeed,IntakeFanRPM,ExhaustFanRPM))
     
-def debug_data(serial_data):
-    print 'Ack           : {0} {1}'.format(serial_data[0], serial_data[1])
-    print 'Start         : {0} {1}'.format(serial_data[2], serial_data[3])
-    print 'Command       : {0} {1}'.format(serial_data[4], serial_data[5])
-    print 'Nr data bytes : {0} (integer {1})'.format(serial_data[6], int(serial_data[6], 16))
-
-    n = 1
-    while n <= int(serial_data[6], 16):
-        print 'Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}'.format(n, serial_data[n+6], int(serial_data[n + 6], 16), n + 6)
-        n += 1
-    
-    print 'Checksum      : {0}'.format(serial_data[-2])
-    print 'End           : {0} {1}'.format(serial_data[-1], serial_data[-0])        
-
 def get_filter_status():
     # 0x07 0xF0 0x00 0xD9 0x00 0x86 0x07 0x0F 
     # Start: 0x07 0xF0
