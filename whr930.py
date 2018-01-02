@@ -94,7 +94,7 @@ def get_ventilation_status():
 
 def get_fan_status():
     # 0x07 0xF0 0x00 0x0B 0x00 0xB8 0x07 0x0F 
-    # Checksum: 0xB8 (0x00 0x0B) = 0 + 11 + 0 + 173 = 390
+    # Checksum: 0xB8 (0x00 0x0B) = 0 + 11 + 0 + 173 = 184
     # End: 0x07 0x0F
 
     data = serial_command("\x07\xF0\x00\x0B\x00\xB8\x07\x0F")
@@ -102,19 +102,17 @@ def get_fan_status():
     if data == None:
         warning_msg('function get_fan_status could not get serial data')
     else:
-        debug_data(data)
-    
-    IntakeFanSpeed = int(data[7], 16)
-    ExhaustFanSpeed = int(data[8], 16)  
-    IntakeFanRPM = int(1875000 / int(''.join([str(int(data[9], 16)), str(int(data[10], 16))])))
-    ExhaustFanRPM = int(1875000 / int(''.join([str(int(data[11], 16)), str(int(data[12], 16))])))
+        IntakeFanSpeed = int(data[7], 16)
+        ExhaustFanSpeed = int(data[8], 16)  
+        IntakeFanRPM = int(1875000 / int(''.join([str(int(data[9], 16)), str(int(data[10], 16))])))
+        ExhaustFanRPM = int(1875000 / int(''.join([str(int(data[11], 16)), str(int(data[12], 16))])))
 
-    publish_message(msg=IntakeFanSpeed, mqtt_path='house/2/attic/wtw/intake_fan_speed')
-    publish_message(msg=ExhaustFanSpeed, mqtt_path='house/2/attic/wtw/exhaust_fan_speed')
-    publish_message(msg=IntakeFanRPM, mqtt_path='house/2/attic/wtw/intake_fan_speed_rpm')
-    publish_message(msg=ExhaustFanRPM, mqtt_path='house/2/attic/wtw/exhaust_fan_speed_rpm')
+        publish_message(msg=IntakeFanSpeed, mqtt_path='house/2/attic/wtw/intake_fan_speed')
+        publish_message(msg=ExhaustFanSpeed, mqtt_path='house/2/attic/wtw/exhaust_fan_speed')
+        publish_message(msg=IntakeFanRPM, mqtt_path='house/2/attic/wtw/intake_fan_speed_rpm')
+        publish_message(msg=ExhaustFanRPM, mqtt_path='house/2/attic/wtw/exhaust_fan_speed_rpm')
 
-    debug_msg('IntakeFanSpeed {0}%, ExhaustFanSpeed {1}%, IntakeAirRPM {2}, ExhaustAirRPM {3}'.format(IntakeFanSpeed,ExhaustFanSpeed,IntakeFanRPM,ExhaustFanRPM))
+        debug_msg('IntakeFanSpeed {0}%, ExhaustFanSpeed {1}%, IntakeAirRPM {2}, ExhaustAirRPM {3}'.format(IntakeFanSpeed,ExhaustFanSpeed,IntakeFanRPM,ExhaustFanRPM))
     
 def debug_data(serial_data):
     print 'Ack           : {0} {1}'.format(serial_data[0], serial_data[1])
@@ -124,7 +122,7 @@ def debug_data(serial_data):
 
     n = 1
     while n <= int(serial_data[6], 16):
-        print 'Data byte {0}   : Hex: {1}, Int: {2}'.format(n, serial_data[n+6], int(serial_data[n + 6], 16))
+        print 'Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}'.format(n, serial_data[n+6], int(serial_data[n + 6], 16), n + 6)
         n += 1
     
     print 'Checksum      : {0}'.format(serial_data[-2])
@@ -152,7 +150,7 @@ def get_filter_status():
         
         publish_message(msg=FilterStatus, mqtt_path='house/2/attic/wtw/filter_status')
         debug_msg('FilterStatus: {0}'.format(FilterStatus))
-
+    
 def recon():
     try:
         mqttc.reconnect()
