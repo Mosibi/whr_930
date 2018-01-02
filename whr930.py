@@ -7,6 +7,7 @@ Interface with a StorkAir WHR930
 Publish every 10 seconds the status on a MQTT topic
 Listen on MQTT topic for commands to set the ventilation level
 """
+
 import paho.mqtt.client as mqtt
 import time
 import serial
@@ -78,11 +79,11 @@ def get_temp():
 
         debug_msg('OutsideAirTemp: {0}, SupplyAirTemp: {1}, ReturnAirTemp: {2}, ExhaustAirTemp: {3}'.format(OutsideAirTemp, SupplyAirTemp, ReturnAirTemp, ExhaustAirTemp))
 
-def get_fan_status():
+def get_ventilation_status():
     data = serial_command("\x07\xF0\x00\xCD\x00\x7A\x07\x0F")
 
     if data == None:
-        warning_msg('get_fan_status function could not get serial data')
+        warning_msg('get_ventilation_status function could not get serial data')
     else:
         ReturnAirLevel = int(data[13], 16)
         SupplyAirLevel = int(data[14], 16)
@@ -90,7 +91,68 @@ def get_fan_status():
 
         publish_message(msg=FanLevel, mqtt_path='house/2/attic/wtw/ventilation_level')
         debug_msg('ReturnAirLevel: {}, SupplyAirLevel: {}, FanLevel: {}'.format(ReturnAirLevel, SupplyAirLevel, FanLevel))
+
+def get_fan_status():
+    # 0x07 0xF0 0x00 0x0B 0x00 0xB8 0x07 0x0F 
+    # Checksum: 0xB8 (0x00 0x0B) = 0 + 11 + 0 + 173 = 390
+    # End: 0x07 0x0F
+
+    data = serial_command("\x07\xF0\x00\x0B\x00\xB8\x07\x0F")
+
+    if data == None:
+        warning_msg('function get_fan_status could not get serial data')
+    else:
+        debug_data(data)
+    
+    IntakeFanSpeed = int(data[7], 16)
+    ExhaustFanSpeed = int(data[8], 16)  
+    IntakeFanRPM = int(1875000 / int(''.join([str(int(data[9], 16)), str(int(data[10], 16))])))
+    ExhaustFanRPM = int(1875000 / int(''.join([str(int(data[11], 16)), str(int(data[12], 16))])))
+
+    publish_message(msg=IntakeFanSpeed, mqtt_path='house/2/attic/wtw/intake_fan_speed')
+    publish_message(msg=ExhaustFanSpeed, mqtt_path='house/2/attic/wtw/exhaust_fan_speed')
+    publish_message(msg=IntakeFanRPM, mqtt_path='house/2/attic/wtw/intake_fan_speed_rpm')
+    publish_message(msg=ExhaustFanRPM, mqtt_path='house/2/attic/wtw/exhaust_fan_speed_rpm')
+
+    debug_msg('IntakeFanSpeed {0}%, ExhaustFanSpeed {1}%, IntakeAirRPM {2}, ExhaustAirRPM {3}'.format(IntakeFanSpeed,ExhaustFanSpeed,IntakeFanRPM,ExhaustFanRPM))
+    
+def debug_data(serial_data):
+    print 'Ack           : {0} {1}'.format(serial_data[0], serial_data[1])
+    print 'Start         : {0} {1}'.format(serial_data[2], serial_data[3])
+    print 'Command       : {0} {1}'.format(serial_data[4], serial_data[5])
+    print 'Nr data bytes : {0} (integer {1})'.format(serial_data[6], int(serial_data[6], 16))
+
+    n = 1
+    while n <= int(serial_data[6], 16):
+        print 'Data byte {0}   : Hex: {1}, Int: {2}'.format(n, serial_data[n+6], int(serial_data[n + 6], 16))
+        n += 1
+    
+    print 'Checksum      : {0}'.format(serial_data[-2])
+    print 'End           : {0} {1}'.format(serial_data[-1], serial_data[-0])        
+
+def get_filter_status():
+    # 0x07 0xF0 0x00 0xD9 0x00 0x86 0x07 0x0F 
+    # Start: 0x07 0xF0
+    # Command: 0x00 0xD9
+    # Number data bytes: 0x00
+    # Checksum: 0x86 (0x00 0xD9) = 0 + 217 + 0 + 173 = 390
+    # End: 0x07 0x0F
+
+    data = serial_command("\x07\xF0\x00\xD9\x00\x86\x07\x0F")
+
+    if data == None:
+        warning_msg('get_filter_status function could not get serial data')
+    else:
+        if int(data[18], 16) == 0:
+            FilterStatus = 'Ok'
+        elif int(data[18], 16) == 1:
+            FilterStatus = 'Full'
+        else:
+            FilterStatus = 'Unknown'
         
+        publish_message(msg=FilterStatus, mqtt_path='house/2/attic/wtw/filter_status')
+        debug_msg('FilterStatus: {0}'.format(FilterStatus))
+
 def recon():
     try:
         mqttc.reconnect()
@@ -122,7 +184,6 @@ def on_disconnect(client, userdata, rc):
 # Main
 ###
 debug = False
-lock_mqtt_publish = False
 
 # Connect to the MQTT broker
 mqttc = mqtt.Client('whr930')
@@ -136,18 +197,16 @@ mqttc.on_disconnect = on_disconnect
 # Connect to the MQTT server
 mqttc.connect('myhost/ip', port=1883, keepalive=45)
 
-# Subcribe to the MQTT topics
-#topic_subscribe()
-
 # Open the serial port
 ser = serial.Serial(port = '/dev/ttyUSB0', baudrate = 9600, bytesize = serial.EIGHTBITS, parity = serial.PARITY_NONE, stopbits = serial.STOPBITS_ONE)
 
 mqttc.loop_start()
 while True:
     try:
-        if lock_mqtt_publish == False:
-            get_temp()
-            get_fan_status()
+        get_temp()
+        get_ventilation_status()
+        get_filter_status()
+        get_fan_status()
 
         time.sleep(10)
         pass
