@@ -65,8 +65,6 @@ def serial_command(cmd):
         return None
 
 def set_ventilation_level(nr):
-    info_msg('Setting ventilation to {0}'.format(nr))
-
     if nr == '0':
         data = serial_command("\x07\xF0\x00\x99\x01\x01\x48\x07\x0F")
     elif nr == '1':
@@ -76,8 +74,11 @@ def set_ventilation_level(nr):
     elif nr == '3':
         data = serial_command("\x07\xF0\x00\x99\x01\x04\x4B\x07\x0F")
 
-    if ( data[0] == '07' and data[1] == 'f3' ):
-        info_msg('Changed the ventilation to {0}'.format(nr))
+    if data:
+        if ( data[0] == '07' and data[1] == 'f3' ):
+            info_msg('Changed the ventilation to {0}'.format(nr))
+        else:
+            warning_msg('Changing the ventilation to {0} went wrong, did not receive an ACK after the set command'.format(nr))
     else:
         warning_msg('Changing the ventilation to {0} went wrong, did not receive an ACK after the set command'.format(nr))
 
