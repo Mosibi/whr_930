@@ -68,13 +68,18 @@ def set_ventilation_level(nr):
     info_msg('Setting ventilation to {0}'.format(nr))
 
     if nr == '0':
-        ser.write("\x07\xF0\x00\x99\x01\x01\x48\x07\x0F")
+        data = serial_command("\x07\xF0\x00\x99\x01\x01\x48\x07\x0F")
     elif nr == '1':
-        ser.write("\x07\xF0\x00\x99\x01\x02\x49\x07\x0F")
+        data = serial_command("\x07\xF0\x00\x99\x01\x02\x49\x07\x0F")
     elif nr == '2':
-        ser.write("\x07\xF0\x00\x99\x01\x03\x4A\x07\x0F")
+        data = serial_command("\x07\xF0\x00\x99\x01\x03\x4A\x07\x0F")
     elif nr == '3':
-        ser.write("\x07\xF0\x00\x99\x01\x04\x4B\x07\x0F")
+        data = serial_command("\x07\xF0\x00\x99\x01\x04\x4B\x07\x0F")
+
+    if ( data[0] == '07' and data[1] == 'f3' ):
+        info_msg('Changed the ventilation to {0}'.format(nr))
+    else:
+        warning_msg('Changing the ventilation to {0} went wrong, did not receive an ACK after the set command')
 
 def get_temp():
     data = serial_command("\x07\xF0\x00\x0F\x00\xBC\x07\x0F")
