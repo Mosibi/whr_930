@@ -79,7 +79,7 @@ def set_ventilation_level(nr):
     if ( data[0] == '07' and data[1] == 'f3' ):
         info_msg('Changed the ventilation to {0}'.format(nr))
     else:
-        warning_msg('Changing the ventilation to {0} went wrong, did not receive an ACK after the set command')
+        warning_msg('Changing the ventilation to {0} went wrong, did not receive an ACK after the set command'.format(nr))
 
 def get_temp():
     data = serial_command("\x07\xF0\x00\x0F\x00\xBC\x07\x0F")
