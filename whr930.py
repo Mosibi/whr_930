@@ -39,8 +39,9 @@ def debug_data(serial_data):
 
 def on_message(client, userdata, message):
     if message.topic == 'house/2/attic/wtw/set_ventilation_level':
-        if int(message.payload) >= 0 and int(message.payload) <= 3:
-            set_ventilation_level(message.payload)
+        fan_level = int(float(message.payload))
+        if fan_level >= 0 and fan_level <= 3:
+            set_ventilation_level(fan_level)
         else:
             warning_msg('Received a message on topic {0} with a wrong payload: {1}'.format(message.topic, message.payload))
     else:
@@ -65,13 +66,13 @@ def serial_command(cmd):
         return None
 
 def set_ventilation_level(nr):
-    if nr == '0':
+    if nr == 0:
         data = serial_command("\x07\xF0\x00\x99\x01\x01\x48\x07\x0F")
-    elif nr == '1':
+    elif nr == 1:
         data = serial_command("\x07\xF0\x00\x99\x01\x02\x49\x07\x0F")
-    elif nr == '2':
+    elif nr == 2:
         data = serial_command("\x07\xF0\x00\x99\x01\x03\x4A\x07\x0F")
-    elif nr == '3':
+    elif nr == 3:
         data = serial_command("\x07\xF0\x00\x99\x01\x04\x4B\x07\x0F")
 
     if data:
