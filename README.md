@@ -1,4 +1,23 @@
-See http://blog.mosibi.nl/?p=736 for more info about this script.
+# WHR 930
+Manage a Storkair WHR 930 system using MQTT.
+
+
+## Installation and configuration
+This (python) code uses some libraries that need to be installed. Assuming you are using a Raspberry Pi or another Debian based Linux distribution, the following command's will install the dependencies
+
+```lang=shell
+$ sudo apt-get install python3-serial python3-pip python3-yaml
+$ sudo pip3 install paho-mqtt
+````
+
+After installing the dependencies, clone this repository and modify the MQTT settings in src/whr930.py and run `sudo make install`.
+
+```lang=shell
+$ git clone https://github.com/Mosibi/whr_930.git
+$ vi src/whr930.py
+$ sudo make install
+$ sudo systemctl start whr930.service
+```
 
 ## Home Assistant configuration
 
