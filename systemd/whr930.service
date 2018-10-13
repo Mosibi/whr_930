@@ -1,0 +1,12 @@
+[Unit]
+Description=WHR930
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /usr/local/bin/whr930.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
