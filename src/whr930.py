@@ -12,17 +12,22 @@ import paho.mqtt.client as mqtt
 import time
 import serial
 
+
 def debug_msg(message):
     if debug is True:
         print('{0} DEBUG: {1}'.format(time.strftime("%d-%m-%Y %H:%M:%S", time.gmtime()), message))
 
+
 def warning_msg(message):
     print('{0} WARNING: {1}'.format(time.strftime("%d-%m-%Y %H:%M:%S", time.gmtime()), message))
+
 
 def info_msg(message):
     print('{0} INFO: {1}'.format(time.strftime("%d-%m-%Y %H:%M:%S", time.gmtime()), message))
 
+
 def debug_data(serial_data):
+    print('Data length   : {0}'.format(len(serial_data)))
     print('Ack           : {0} {1}'.format(serial_data[0], serial_data[1]))
     print('Start         : {0} {1}'.format(serial_data[2], serial_data[3]))
     print('Command       : {0} {1}'.format(serial_data[4], serial_data[5]))
@@ -31,11 +36,11 @@ def debug_data(serial_data):
     n = 1
     while n <= int(serial_data[6], 16):
         print('Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}'.format(n, serial_data[n+6], int(serial_data[n + 6], 16), n + 6))
-
         n += 1
     
     print('Checksum      : {0}'.format(serial_data[-2]))
     print('End           : {0} {1}'.format(serial_data[-1], serial_data[-0]))
+
 
 def on_message(client, userdata, message):
     if message.topic == 'house/2/attic/wtw/set_ventilation_level':
@@ -47,23 +52,47 @@ def on_message(client, userdata, message):
     else:
         debug_msg("message received: topic: {0}, payload: {1}, userdata: {2}".format(message.topic, message.payload, userdata))
 
+
 def publish_message(msg, mqtt_path):                                                                      
     mqttc.publish(mqtt_path, payload=msg, qos=0, retain=True)
     time.sleep(0.1)
     debug_msg('published message {0} on topic {1} at {2}'.format(msg, mqtt_path, time.asctime(time.localtime(time.time()))))
 
+
 def serial_command(cmd):
     data = []
     ser.write(cmd)
     time.sleep(2)
-
+    
     while ser.inWaiting() > 0:
         data.append(ser.read(1).hex())
+    
+    if len(data) <= 1: 
+        # always expect a valid ACK at least 
+        return None 
+            
+    if len(data) == 2 and data[0] == '07' and data[1] == 'f3':
+        # This is a regular ACK which is received on all "setting" commands, 
+        # such as setting ventilation level, command 0x99) 
+        pass
+    else: 
+        # A valid response should be at least 10 bytes (ACK + response with data length = 0) 
+        if len(data) < 10 or data[0] != '07' or data[1] != 'f3' or data[2] != '07' or data[3] != 'f0' or data[-2] != '07' or data[-1] != '0f': 
+            warning_msg('Received garbage data, ignored ...')
+            return None 
+                    
+        dataset_len = int(data[6], 16) # 
+                
+        if len(data) > 10 and dataset_len > 0:
+            for i in range(7,6 + dataset_len): 
+                # Remove double 0x07 in the dataset if present.
+                # When a 0x07 value appears in the dataset, another 0x07 is inserted, 
+                # but not added to the lenght or the checksum
+                if data[i] == '07' and data[i + 1] == '07':
+                    del data[i + 1]
+                    
+    return data
 
-    if len(data) > 0:
-        return data
-    else:
-        return None
 
 def set_ventilation_level(nr):
     if nr == 0:
@@ -83,6 +112,7 @@ def set_ventilation_level(nr):
     else:
         warning_msg('Changing the ventilation to {0} went wrong, did not receive an ACK after the set command'.format(nr))
 
+
 def get_temp():
     data = serial_command(b'\x07\xF0\x00\x0F\x00\xBC\x07\x0F')
 
@@ -100,6 +130,7 @@ def get_temp():
         publish_message(msg=ExhaustAirTemp, mqtt_path='house/2/attic/wtw/exhaust_air_temp')
 
         debug_msg('OutsideAirTemp: {0}, SupplyAirTemp: {1}, ReturnAirTemp: {2}, ExhaustAirTemp: {3}'.format(OutsideAirTemp, SupplyAirTemp, ReturnAirTemp, ExhaustAirTemp))
+
 
 def get_ventilation_status():
     data = serial_command(b'\x07\xF0\x00\xCD\x00\x7A\x07\x0F')
@@ -123,6 +154,7 @@ def get_ventilation_status():
         publish_message(msg=StrIntakeFanActive, mqtt_path='house/2/attic/wtw/intake_fan_active')
         debug_msg('ReturnAirLevel: {}, SupplyAirLevel: {}, FanLevel: {}, IntakeFanActive: {}'.format(ReturnAirLevel, SupplyAirLevel, FanLevel, StrIntakeFanActive))
 
+
 def get_fan_status():
     # 0x07 0xF0 0x00 0x0B 0x00 0xB8 0x07 0x0F 
     # Checksum: 0xB8 (0x00 0x0B) = 0 + 11 + 0 + 173 = 184
@@ -135,8 +167,8 @@ def get_fan_status():
     else:
         IntakeFanSpeed = int(data[7], 16)
         ExhaustFanSpeed = int(data[8], 16)  
-        IntakeFanRPM = int(1875000 / int(''.join([str(int(data[9], 16)), str(int(data[10], 16))])))
-        ExhaustFanRPM = int(1875000 / int(''.join([str(int(data[11], 16)), str(int(data[12], 16))])))
+        IntakeFanRPM = int(1875000 / (int(data[9], 16) * 256 + int(data[10], 16)))
+        ExhaustFanRPM = int(1875000 / (int(data[11], 16) * 256 + int(data[12], 16)))
 
         publish_message(msg=IntakeFanSpeed, mqtt_path='house/2/attic/wtw/intake_fan_speed')
         publish_message(msg=ExhaustFanSpeed, mqtt_path='house/2/attic/wtw/exhaust_fan_speed')
@@ -145,6 +177,7 @@ def get_fan_status():
 
         debug_msg('IntakeFanSpeed {0}%, ExhaustFanSpeed {1}%, IntakeAirRPM {2}, ExhaustAirRPM {3}'.format(IntakeFanSpeed,ExhaustFanSpeed,IntakeFanRPM,ExhaustFanRPM))
     
+
 def get_filter_status():
     # 0x07 0xF0 0x00 0xD9 0x00 0x86 0x07 0x0F 
     # Start: 0x07 0xF0
@@ -168,6 +201,7 @@ def get_filter_status():
         publish_message(msg=FilterStatus, mqtt_path='house/2/attic/wtw/filter_status')
         debug_msg('FilterStatus: {0}'.format(FilterStatus))
     
+
 def recon():
     try:
         mqttc.reconnect()
@@ -178,6 +212,7 @@ def recon():
         time.sleep(10)
         recon()
         
+
 def topic_subscribe():
     try:
         mqttc.subscribe("house/2/attic/wtw/set_ventilation_level", 0)
@@ -187,9 +222,11 @@ def topic_subscribe():
         time.sleep(10)
         topic_subscribe()
 
+
 def on_connect(client, userdata, flags, rc):
     topic_subscribe()
     
+
 def on_disconnect(client, userdata, rc):
     if rc != 0:
         warning_msg('Unexpected disconnection from MQTT, trying to reconnect')
