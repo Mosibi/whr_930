@@ -116,7 +116,7 @@ def set_ventilation_level(nr):
 def get_temp():
     data = serial_command(b'\x07\xF0\x00\x0F\x00\xBC\x07\x0F')
 
-    if data == None:
+    if data is None:
         warning_msg('get_temp function could not get serial data')
     else:
         OutsideAirTemp = int(data[7], 16) / 2.0 - 20
@@ -135,7 +135,7 @@ def get_temp():
 def get_ventilation_status():
     data = serial_command(b'\x07\xF0\x00\xCD\x00\x7A\x07\x0F')
 
-    if data == None:
+    if data is None:
         warning_msg('get_ventilation_status function could not get serial data')
     else:
         ReturnAirLevel = int(data[13], 16)
@@ -162,7 +162,7 @@ def get_fan_status():
 
     data = serial_command(b'\x07\xF0\x00\x0B\x00\xB8\x07\x0F')
 
-    if data == None:
+    if data is None:
         warning_msg('function get_fan_status could not get serial data')
     else:
         IntakeFanSpeed = int(data[7], 16)
@@ -188,7 +188,7 @@ def get_filter_status():
 
     data = serial_command(b'\x07\xF0\x00\xD9\x00\x86\x07\x0F')
 
-    if data == None:
+    if data is None:
         warning_msg('get_filter_status function could not get serial data')
     else:
         if int(data[18], 16) == 0:
