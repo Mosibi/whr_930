@@ -27,19 +27,27 @@ def info_msg(message):
 
 
 def debug_data(serial_data):
-    print('Data length   : {0}'.format(len(serial_data)))
-    print('Ack           : {0} {1}'.format(serial_data[0], serial_data[1]))
-    print('Start         : {0} {1}'.format(serial_data[2], serial_data[3]))
-    print('Command       : {0} {1}'.format(serial_data[4], serial_data[5]))
-    print('Nr data bytes : {0} (integer {1})'.format(serial_data[6], int(serial_data[6], 16)))
+    if debug_level > 0:
+        data_len = len(serial_data)
+        print('Data length   : {0}'.format(len(serial_data)))
+        print('Ack           : {0} {1}'.format(serial_data[0], serial_data[1]))
+        print('Start         : {0} {1}'.format(serial_data[2], serial_data[3]))
+        print('Command       : {0} {1}'.format(serial_data[4], serial_data[5]))
+        print('Nr data bytes : {0} (integer {1})'.format(serial_data[6], int(serial_data[6], 16)))
 
-    n = 1
-    while n <= int(serial_data[6], 16):
-        print('Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}'.format(n, serial_data[n+6], int(serial_data[n + 6], 16), n + 6))
-        n += 1
+        n = 1
+        while n <= int(serial_data[6], 16):
+            print('Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}'.format(n, serial_data[n+6], int(serial_data[n + 6], 16), n + 6))
+            n += 1
     
-    print('Checksum      : {0}'.format(serial_data[-2]))
-    print('End           : {0} {1}'.format(serial_data[-1], serial_data[-0]))
+        print('Checksum      : {0}'.format(serial_data[-2]))
+        print('End           : {0} {1}'.format(serial_data[-2], serial_data[-1]))
+
+    if debug_level > 1:
+        n = 0
+        while n < data_len:
+            print('serial_data {0}   : {1}'.format(n, serial_data[n]))
+            n += 1
 
 
 def on_message(client, userdata, message):
@@ -58,6 +66,50 @@ def publish_message(msg, mqtt_path):
     time.sleep(0.1)
     debug_msg('published message {0} on topic {1} at {2}'.format(msg, mqtt_path, time.asctime(time.localtime(time.time()))))
 
+def validate_data(data):
+    if len(data) <= 1: 
+        # always expect a valid ACK at least 
+        return None 
+    
+    if len(data) == 2 and data[0] == '07' and data[1] == 'f3':
+        # This is a regular ACK which is received on all "setting" commands, 
+        # such as setting ventilation level, command 0x99) 
+        return data
+    else:
+        if len(data) >= 10: 
+            # A valid response should be at least 10 bytes (ACK + response with data length = 0) 
+
+            # Byte 6 in the array contains the length of the dataset. This length + 10 is the total
+            # size of the message
+            dataset_len = int(data[6], 16)
+            message_len = dataset_len + 10
+            debug_msg("Message length is {}".format(message_len))
+
+            # Sometimes more data is captured on the serial port then we expect. We drop those extra
+            # bytes to get a clean data to work on
+            stripped_data = data[0:message_len]
+            debug_msg("Stripped message length is {}".format(len(stripped_data)))
+
+            if stripped_data[0] != '07' or stripped_data[1] != 'f3' or stripped_data[2] != '07' or stripped_data[3] != 'f0' or stripped_data[-2] != '07' or stripped_data[-1] != '0f': 
+                warning_msg('Received garbage data, ignored ...')
+                debug_data(stripped_data)
+                return None 
+            else:
+                debug_msg("Serial data validation passed")
+                # Since we are here, we have a clean data set. Now we need to remove
+                # a double 0x07 in the dataset if present. This must be done because
+                # according the protocol specification, when a 0x07 value appears in 
+                # the dataset, another 0x07 is inserted, but not added to the length 
+                # or the checksum
+                for i in range(7,6 + dataset_len): 
+                    if stripped_data[i] == '07' and stripped_data[i + 1] == '07':
+                        del stripped_data[i + 1]
+
+                return stripped_data
+        else:
+            warning_msg("The length of the data we recieved from the serial port is {}, it should be minimal 10 bytes".format(len(data)))
+            return None
+        
 
 def serial_command(cmd):
     data = []
@@ -66,33 +118,8 @@ def serial_command(cmd):
     
     while ser.inWaiting() > 0:
         data.append(ser.read(1).hex())
-    
-    if len(data) <= 1: 
-        # always expect a valid ACK at least 
-        return None 
-            
-    if len(data) == 2 and data[0] == '07' and data[1] == 'f3':
-        # This is a regular ACK which is received on all "setting" commands, 
-        # such as setting ventilation level, command 0x99) 
-        pass
-    else: 
-        # A valid response should be at least 10 bytes (ACK + response with data length = 0) 
-        if len(data) < 10 or data[0] != '07' or data[1] != 'f3' or data[2] != '07' or data[3] != 'f0' or data[-2] != '07' or data[-1] != '0f': 
-            warning_msg('Received garbage data, ignored ...')
-            return None 
-                    
-        dataset_len = int(data[6], 16) # 
-                
-        if len(data) > 10 and dataset_len > 0:
-            for i in range(7,6 + dataset_len): 
-                # Remove double 0x07 in the dataset if present.
-                # When a 0x07 value appears in the dataset, another 0x07 is inserted, 
-                # but not added to the lenght or the checksum
-                if data[i] == '07' and data[i + 1] == '07':
-                    del data[i + 1]
-                    
-    return data
 
+    return validate_data(data)
 
 def set_ventilation_level(nr):
     if nr == 0:
@@ -236,6 +263,7 @@ def on_disconnect(client, userdata, rc):
 # Main
 ###
 debug = False
+debug_level = 0
 
 # Connect to the MQTT broker
 mqttc = mqtt.Client('whr930')
