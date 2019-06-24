@@ -227,7 +227,42 @@ def get_filter_status():
         
         publish_message(msg=FilterStatus, mqtt_path='house/2/attic/wtw/filter_status')
         debug_msg('FilterStatus: {0}'.format(FilterStatus))
-    
+
+
+def get_bypass_status():
+    # 0x07 0xF0 0x00 0x0D 0x00 0xBA 0x07 0x0F 
+    # Checksum: 0xBA (0x00 0x0D) = 0 + 13 + 0 + 173 = 186
+    # End: 0x07 0x0F
+    data = serial_command(b'\x07\xF0\x00\x0D\x00\xBA\x07\x0F')
+
+
+def get_bypass_control():
+    # 0x07 0xF0 0x00 0xDF 0x00 0x8C 0x07 0x0F 
+    # Checksum: 0x8C (0x00 0xDF) = 0 + 223 + 0 + 173 = 396
+    # End: 0x07 0x0F
+    data = serial_command(b'\x07\xF0\x00\xDF\x00\x8C\x07\x0F')
+
+
+def get_preheating_status():
+    # 0x07 0xF0 0x00 0xE1 0x00 0x8E 0x07 0x0F 
+    # Checksum: 0x8E (0x00 0xE1) = 0 + 225 + 0 + 173 = 398
+    # End: 0x07 0x0F
+    data = serial_command(b'\x07\xF0\x00\xE1\x00\x8E\x07\x0F')
+
+
+def get_operating_hours():
+    # 0x07 0xF0 0x00 0xDD 0x00 0x8A 0x07 0x0F 
+    # Checksum: 0x8A (0x00 0xDD) = 0 + 221 + 0 + 173 = 394
+    # End: 0x07 0x0F
+    data = serial_command(b'\x07\xF0\x00\xDD\x00\x8A\x07\x0F')
+
+
+def get_status():
+    # 0x07 0xF0 0x00 0xD5 0x00 0x82 0x07 0x0F 
+    # Checksum: 0x82 (0x00 0xD5) = 0 + 213 + 0 + 173 = 386
+    # End: 0x07 0x0F
+    data = serial_command(b'\x07\xF0\x00\xD5\x00\x82\x07\x0F')
+
 
 def recon():
     try:
