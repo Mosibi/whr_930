@@ -229,11 +229,26 @@ def get_filter_status():
         debug_msg('FilterStatus: {0}'.format(FilterStatus))
 
 
-def get_bypass_status():
+def get_valve_status():
     # 0x07 0xF0 0x00 0x0D 0x00 0xBA 0x07 0x0F 
     # Checksum: 0xBA (0x00 0x0D) = 0 + 13 + 0 + 173 = 186
     # End: 0x07 0x0F
     data = serial_command(b'\x07\xF0\x00\x0D\x00\xBA\x07\x0F')
+
+    if data is None:
+        warning_msg('get_valve_status function could not get serial data')
+    else:
+        ByPass = int(data[7])
+        PreHeating = int(data[8])
+        ByPassMotorCurrent = int(data[9])
+        PreHeatingMotorCurrent = int(data[10])
+
+    publish_message(msg=ByPass, mqtt_path='house/2/attic/wtw/valve_bypass_percentage')
+    publish_message(msg=PreHeating, mqtt_path='house/2/attic/wtw/valve_preheating')
+    publish_message(msg=ByPassMotorCurrent, mqtt_path='house/2/attic/wtw/bypass_motor_current')
+    publish_message(msg=PreHeatingMotorCurrent, mqtt_path='house/2/attic/wtw/preheating_motor_current')
+
+    debug_msg('ByPass: {}, PreHeating: {}, ByPassMotorCurrent: {}, PreHeatingMotorCurrent: {}'.format(ByPass, PreHeating, ByPassMotorCurrent, PreHeatingMotorCurrent))
 
 
 def get_bypass_control():
@@ -241,6 +256,25 @@ def get_bypass_control():
     # Checksum: 0x8C (0x00 0xDF) = 0 + 223 + 0 + 173 = 396
     # End: 0x07 0x0F
     data = serial_command(b'\x07\xF0\x00\xDF\x00\x8C\x07\x0F')
+
+    if data is None:
+        warning_msg('get_bypass_control function could not get serial data')
+    else:
+        ByPassFactor = int(data[9])
+        ByPassStep = int(data[10])
+        ByPassCorrection = int(data[11])
+        
+        if int(data[13]) == 1:
+            SummerMode = True
+        else:
+            SummerMode = False
+
+    publish_message(msg=ByPassFactor, mqtt_path='house/2/attic/wtw/bypass_factor')
+    publish_message(msg=ByPassStep, mqtt_path='house/2/attic/wtw/bypass_step')
+    publish_message(msg=ByPassCorrection, mqtt_path='house/2/attic/wtw/bypass_correction')
+    publish_message(msg=SummerMode, mqtt_path='house/2/attic/wtw/summermode')
+
+    debug_msg('ByPassFactor: {}, ByPassStep: {}, ByPassCorrection: {}, SummerMode: {}'.format(ByPassFactor, ByPassStep, ByPassCorrection, SummerMode))
 
 
 def get_preheating_status():
@@ -322,6 +356,8 @@ while True:
         get_ventilation_status()
         get_filter_status()
         get_fan_status()
+        get_bypass_control()
+        get_valve_status()
 
         time.sleep(10)
         pass
