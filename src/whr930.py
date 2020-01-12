@@ -243,12 +243,12 @@ def get_valve_status():
         ByPassMotorCurrent = int(data[9])
         PreHeatingMotorCurrent = int(data[10])
 
-    publish_message(msg=ByPass, mqtt_path='house/2/attic/wtw/valve_bypass_percentage')
-    publish_message(msg=PreHeating, mqtt_path='house/2/attic/wtw/valve_preheating')
-    publish_message(msg=ByPassMotorCurrent, mqtt_path='house/2/attic/wtw/bypass_motor_current')
-    publish_message(msg=PreHeatingMotorCurrent, mqtt_path='house/2/attic/wtw/preheating_motor_current')
+        publish_message(msg=ByPass, mqtt_path='house/2/attic/wtw/valve_bypass_percentage')
+        publish_message(msg=PreHeating, mqtt_path='house/2/attic/wtw/valve_preheating')
+        publish_message(msg=ByPassMotorCurrent, mqtt_path='house/2/attic/wtw/bypass_motor_current')
+        publish_message(msg=PreHeatingMotorCurrent, mqtt_path='house/2/attic/wtw/preheating_motor_current')
 
-    debug_msg('ByPass: {}, PreHeating: {}, ByPassMotorCurrent: {}, PreHeatingMotorCurrent: {}'.format(ByPass, PreHeating, ByPassMotorCurrent, PreHeatingMotorCurrent))
+        debug_msg('ByPass: {}, PreHeating: {}, ByPassMotorCurrent: {}, PreHeatingMotorCurrent: {}'.format(ByPass, PreHeating, ByPassMotorCurrent, PreHeatingMotorCurrent))
 
 
 def get_bypass_control():
@@ -269,12 +269,12 @@ def get_bypass_control():
         else:
             SummerMode = False
 
-    publish_message(msg=ByPassFactor, mqtt_path='house/2/attic/wtw/bypass_factor')
-    publish_message(msg=ByPassStep, mqtt_path='house/2/attic/wtw/bypass_step')
-    publish_message(msg=ByPassCorrection, mqtt_path='house/2/attic/wtw/bypass_correction')
-    publish_message(msg=SummerMode, mqtt_path='house/2/attic/wtw/summermode')
+        publish_message(msg=ByPassFactor, mqtt_path='house/2/attic/wtw/bypass_factor')
+        publish_message(msg=ByPassStep, mqtt_path='house/2/attic/wtw/bypass_step')
+        publish_message(msg=ByPassCorrection, mqtt_path='house/2/attic/wtw/bypass_correction')
+        publish_message(msg=SummerMode, mqtt_path='house/2/attic/wtw/summermode')
 
-    debug_msg('ByPassFactor: {}, ByPassStep: {}, ByPassCorrection: {}, SummerMode: {}'.format(ByPassFactor, ByPassStep, ByPassCorrection, SummerMode))
+        debug_msg('ByPassFactor: {}, ByPassStep: {}, ByPassCorrection: {}, SummerMode: {}'.format(ByPassFactor, ByPassStep, ByPassCorrection, SummerMode))
 
 
 def get_preheating_status():
