@@ -1,6 +1,8 @@
 # WHR 930
 Manage a Storkair WHR 930 system using MQTT.
 
+See also my [blog posting](https://blog.mosibi.nl/domotica/2017/12/31/control-a-storkair-zehnder-whr-930-ventilation-unit-using-mqtt.html) I wrote about the WHR 930
+
 
 ## Installation and configuration
 This (python) code uses some libraries that need to be installed. Assuming you are using a Raspberry Pi or another Debian based Linux distribution, the following command's will install the dependencies
@@ -21,7 +23,7 @@ $ sudo systemctl start whr930.service
 
 ## Home Assistant configuration
 
-![Image](http://blog.mosibi.nl/wp-content/uploads/2018/01/whr930_homeassistant_2.png)
+![Image](https://blog.mosibi.nl/assets/whr930_homeassistant_2.png)
 
 ```
 input_number:
