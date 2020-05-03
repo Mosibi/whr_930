@@ -240,8 +240,6 @@ def set_ventilation_level(fan_level):
     packet = create_packet([0x00, 0x99], [fan_level + 1])
     data = serial_command(packet)
 
-    for b in data:
-        print("b: {}".format(b))
     if data:
         if data[0] == "07" and data[1] == "f3":
             info_msg("Changed the ventilation to {0}".format(fan_level))
