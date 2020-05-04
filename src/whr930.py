@@ -429,10 +429,10 @@ def get_valve_status():
     if data is None:
         warning_msg("get_valve_status function could not get serial data")
     else:
-        ByPass = int(data[7])
-        PreHeating = int(data[8])
-        ByPassMotorCurrent = int(data[9])
-        PreHeatingMotorCurrent = int(data[10])
+        ByPass = int(data[7], 16)
+        PreHeating = int(data[8], 16)
+        ByPassMotorCurrent = int(data[9], 16)
+        PreHeatingMotorCurrent = int(data[10], 16)
 
         publish_message(
             msg=ByPass, mqtt_path="house/2/attic/wtw/valve_bypass_percentage"
@@ -463,11 +463,11 @@ def get_bypass_control():
     if data is None:
         warning_msg("get_bypass_control function could not get serial data")
     else:
-        ByPassFactor = int(data[9])
-        ByPassStep = int(data[10])
-        ByPassCorrection = int(data[11])
+        ByPassFactor = int(data[9], 16)
+        ByPassStep = int(data[10], 16)
+        ByPassCorrection = int(data[11], 16)
 
-        if int(data[13]) == 1:
+        if int(data[13], 16) == 1:
             SummerMode = True
         else:
             SummerMode = False
