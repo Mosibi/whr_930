@@ -501,6 +501,41 @@ def get_operating_hours():
     packet = create_packet([0x00, 0xDD])
     data = serial_command(packet)
 
+    Level0Hours = int(data[7], 16) + int(data[8], 16) + int(data[9], 16)
+    Level1Hours = int(data[10], 16) + int(data[11], 16) + int(data[12], 16)
+    Level2Hours = int(data[13], 16) + int(data[14], 16) + int(data[15], 16)
+    Level3Hours = int(data[24], 16) + int(data[25], 16) + int(data[26], 16)
+    FrostProtectionHours = int(data[16], 16) + int(data[17], 16)
+    PreHeatingHours = int(data[18], 16) + int(data[19], 16)
+    BypassOpenHours = int(data[14], 16) + int(data[15], 16)
+    FilterHours = int(data[22], 16) + int(data[23], 16)
+
+    publish_message(msg=Level0Hours, mqtt_path="house/2/attic/wtw/level0_hours")
+    publish_message(msg=Level1Hours, mqtt_path="house/2/attic/wtw/level1_hours")
+    publish_message(msg=Level2Hours, mqtt_path="house/2/attic/wtw/level2_hours")
+    publish_message(msg=Level3Hours, mqtt_path="house/2/attic/wtw/level3_hours")
+    publish_message(
+        msg=FrostProtectionHours, mqtt_path="house/2/attic/wtw/frost_protection_hours"
+    )
+    publish_message(msg=PreHeatingHours, mqtt_path="house/2/attic/wtw/preheating_hours")
+    publish_message(
+        msg=BypassOpenHours, mqtt_path="house/2/attic/wtw/bypass_open_hours"
+    )
+    publish_message(msg=FilterHours, mqtt_path="house/2/attic/wtw/filter_hours")
+
+    debug_msg(
+        "Level0Hours: {}, Level1Hours: {}, Level2Hours: {}, Level3Hours: {}, FrostProtectionHours: {}, PreHeatingHours: {}, BypassOpenHours: {}, FilterHours: {}".format(
+            Level0Hours,
+            Level1Hours,
+            Level2Hours,
+            Level3Hours,
+            FrostProtectionHours,
+            PreHeatingHours,
+            BypassOpenHours,
+            FilterHours,
+        )
+    )
+
 
 def get_status():
     """
@@ -646,6 +681,7 @@ def main():
             get_bypass_control()
             get_valve_status()
             get_status()
+            get_operating_hours()
 
             time.sleep(8)
             pass
