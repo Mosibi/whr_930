@@ -509,6 +509,61 @@ def get_status():
     packet = create_packet([0x00, 0xD5])
     data = serial_command(packet)
 
+    status_data = {
+        "PreHeatingPresent": {0: "NotPresent", 1: "Present"},
+        "ByPassPresent": {0: "NotPresent", 1: "Present"},
+        "Type": {0: "Right", 1: "Left"},
+        "Size": {1: "Large", 2: "Small"},
+        "OptionsPresent": {0: "NotPresent", 1: "Present"},
+        "EnthalpyPresent": {0: "NotPresent", 1: "Present", 2: "PresentWithoutSensor"},
+        "EWTPresent": {0: "NotPresent", 1: "Managed", 2: "Unmanaged"},
+    }
+
+    PreHeatingPresent = status_data["PreHeatingPresent"][int(data[7])]
+    ByPassPresent = status_data["ByPassPresent"][int(data[8])]
+    Type = status_data["Type"][int(data[9])]
+    Size = status_data["Size"][int(data[10])]
+    OptionsPresent = status_data["OptionsPresent"][int(data[11])]
+    ActiveStatus1 = int(
+        data[13]
+    )  # (0x01 = P10 ... 0x80 = P17) Info about this?, please share it with me (richard@mosibi.nl)
+    ActiveStatus2 = int(
+        data[14]
+    )  # (0x01 = P18 / 0x02 = P19) Info about this?, please share it with me (richard@mosibi.nl)
+    ActiveStatus3 = int(
+        data[15]
+    )  # (0x01 = P90 ... 0x40 = P96) Info about this?, please share it with me (richard@mosibi.nl)
+    EnthalpyPresent = status_data["EnthalpyPresent"][int(data[16])]
+    EWTPresent = status_data["EWTPresent"][int(data[17])]
+
+    debug_msg(
+        "PreHeatingPresent: {}, ByPassPresent: {}, Type: {}, Size: {}, OptionsPresent: {}, ActiveStatus1: {}, ActiveStatus2: {}, ActiveStatus3: {}, EnthalpyPresent: {}, EWTPresent: {}".format(
+            PreHeatingPresent,
+            ByPassPresent,
+            Type,
+            Size,
+            OptionsPresent,
+            ActiveStatus1,
+            ActiveStatus2,
+            ActiveStatus3,
+            EnthalpyPresent,
+            EWTPresent,
+        )
+    )
+
+    publish_message(
+        msg=PreHeatingPresent, mqtt_path="house/2/attic/wtw/preheating_present"
+    )
+    publish_message(msg=ByPassPresent, mqtt_path="house/2/attic/wtw/bypass_present")
+    publish_message(msg=Type, mqtt_path="house/2/attic/wtw/type")
+    publish_message(msg=Size, mqtt_path="house/2/attic/wtw/size")
+    publish_message(msg=OptionsPresent, mqtt_path="house/2/attic/wtw/options_present")
+    publish_message(msg=ActiveStatus1, mqtt_path="house/2/attic/wtw/activestatus1")
+    publish_message(msg=ActiveStatus2, mqtt_path="house/2/attic/wtw/activestatus2")
+    publish_message(msg=ActiveStatus3, mqtt_path="house/2/attic/wtw/activestatus3")
+    publish_message(msg=EnthalpyPresent, mqtt_path="house/2/attic/wtw/enthalpy_present")
+    publish_message(msg=EWTPresent, mqtt_path="house/2/attic/wtw/ewt_present")
+
 
 def recon():
     try:
@@ -590,6 +645,7 @@ def main():
             get_fan_status()
             get_bypass_control()
             get_valve_status()
+            get_status()
 
             time.sleep(8)
             pass
