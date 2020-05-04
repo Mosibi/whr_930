@@ -493,6 +493,35 @@ def get_preheating_status():
     packet = create_packet([0x00, 0xE1])
     data = serial_command(packet)
 
+    status_data = {
+        "PreHeatingValveStatus": {0: "Closed", 1: "Open", "2": "Unknown"},
+        "FrostProtection": {0: "NotActive", 1: "Active"},
+        "PreHeatingState": {0: "NotActive", 1: "Active"},
+    }
+
+    if data is None:
+        warning_msg("get_preheating_status function could not get serial data")
+    else:
+        PreHeatingValveStatus = status_data["PreHeatingValveStatus"][int(data[7], 16)]
+        FrostProtection = status_data["FrostProtection"][int(data[8], 16)]
+        PreHeatingState = status_data["PreHeatingState"][int(data[9], 16)]
+
+        publish_message(
+            msg=PreHeatingValveStatus, mqtt_path="house/2/attic/wtw/preheating_valve"
+        )
+        publish_message(
+            msg=FrostProtection, mqtt_path="house/2/attic/wtw/frost_protection"
+        )
+        publish_message(
+            msg=PreHeatingState, mqtt_path="house/2/attic/wtw/preheating_state"
+        )
+
+        debug_msg(
+            "PreHeatingValveStatus: {}, FrostProtection: {}, PreHeatingState: {}".format(
+                PreHeatingValveStatus, FrostProtection, PreHeatingState
+            )
+        )
+
 
 def get_operating_hours():
     """
@@ -682,6 +711,7 @@ def main():
             get_valve_status()
             get_status()
             get_operating_hours()
+            get_preheating_status()
 
             time.sleep(8)
             pass
