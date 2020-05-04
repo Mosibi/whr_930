@@ -334,6 +334,8 @@ def get_ventilation_status():
     """
     Command: 0x00 0xCD
     """
+    status_data = {"IntakeFanActive": {0: False, 1: True}}
+
     packet = create_packet([0x00, 0xCD])
     data = serial_command(packet)
 
@@ -343,22 +345,15 @@ def get_ventilation_status():
         ReturnAirLevel = int(data[13], 16)
         SupplyAirLevel = int(data[14], 16)
         FanLevel = int(data[15], 16) - 1
-        IntakeFanActive = int(data[16], 16)
-
-        if IntakeFanActive == 1:
-            StrIntakeFanActive = "Yes"
-        elif IntakeFanActive == 0:
-            StrIntakeFanActive = "No"
-        else:
-            StrIntakeFanActive = "Unknown"
+        IntakeFanActive = status_data["IntakeFanActive"][int(data[16], 16)]
 
         publish_message(msg=FanLevel, mqtt_path="house/2/attic/wtw/ventilation_level")
         publish_message(
-            msg=StrIntakeFanActive, mqtt_path="house/2/attic/wtw/intake_fan_active"
+            msg=IntakeFanActive, mqtt_path="house/2/attic/wtw/intake_fan_active"
         )
         debug_msg(
             "ReturnAirLevel: {}, SupplyAirLevel: {}, FanLevel: {}, IntakeFanActive: {}".format(
-                ReturnAirLevel, SupplyAirLevel, FanLevel, StrIntakeFanActive
+                ReturnAirLevel, SupplyAirLevel, FanLevel, IntakeFanActive
             )
         )
 
@@ -490,35 +485,36 @@ def get_preheating_status():
     """
     Command: 0x00 0xE1
     """
-    packet = create_packet([0x00, 0xE1])
-    data = serial_command(packet)
-
     status_data = {
         "PreHeatingValveStatus": {0: "Closed", 1: "Open", "2": "Unknown"},
-        "FrostProtection": {0: "NotActive", 1: "Active"},
-        "PreHeatingState": {0: "NotActive", 1: "Active"},
+        "FrostProtectionActive": {0: False, 1: True},
+        "PreHeatingActive": {0: False, 1: True},
     }
+
+    packet = create_packet([0x00, 0xE1])
+    data = serial_command(packet)
 
     if data is None:
         warning_msg("get_preheating_status function could not get serial data")
     else:
         PreHeatingValveStatus = status_data["PreHeatingValveStatus"][int(data[7], 16)]
-        FrostProtection = status_data["FrostProtection"][int(data[8], 16)]
-        PreHeatingState = status_data["PreHeatingState"][int(data[9], 16)]
+        FrostProtectionActive = status_data["FrostProtectionActive"][int(data[8], 16)]
+        PreHeatingActive = status_data["PreHeatingActive"][int(data[9], 16)]
 
         publish_message(
             msg=PreHeatingValveStatus, mqtt_path="house/2/attic/wtw/preheating_valve"
         )
         publish_message(
-            msg=FrostProtection, mqtt_path="house/2/attic/wtw/frost_protection"
+            msg=FrostProtectionActive,
+            mqtt_path="house/2/attic/wtw/frost_protection_active",
         )
         publish_message(
-            msg=PreHeatingState, mqtt_path="house/2/attic/wtw/preheating_state"
+            msg=PreHeatingActive, mqtt_path="house/2/attic/wtw/preheating_state"
         )
 
         debug_msg(
-            "PreHeatingValveStatus: {}, FrostProtection: {}, PreHeatingState: {}".format(
-                PreHeatingValveStatus, FrostProtection, PreHeatingState
+            "PreHeatingValveStatus: {}, FrostProtectionActive: {}, PreHeatingActive: {}".format(
+                PreHeatingValveStatus, FrostProtectionActive, PreHeatingActive
             )
         )
 
@@ -570,18 +566,18 @@ def get_status():
     """
     Command: 0x00 0xD5
     """
-    packet = create_packet([0x00, 0xD5])
-    data = serial_command(packet)
-
     status_data = {
-        "PreHeatingPresent": {0: "NotPresent", 1: "Present"},
-        "ByPassPresent": {0: "NotPresent", 1: "Present"},
+        "PreHeatingPresent": {0: False, 1: True},
+        "ByPassPresent": {0: False, 1: True},
         "Type": {0: "Right", 1: "Left"},
         "Size": {1: "Large", 2: "Small"},
-        "OptionsPresent": {0: "NotPresent", 1: "Present"},
-        "EnthalpyPresent": {0: "NotPresent", 1: "Present", 2: "PresentWithoutSensor"},
-        "EWTPresent": {0: "NotPresent", 1: "Managed", 2: "Unmanaged"},
+        "OptionsPresent": {0: False, 1: True},
+        "EnthalpyPresent": {0: False, 1: True, 2: "PresentWithoutSensor"},
+        "EWTPresent": {0: False, 1: "Managed", 2: "Unmanaged"},
     }
+
+    packet = create_packet([0x00, 0xD5])
+    data = serial_command(packet)
 
     PreHeatingPresent = status_data["PreHeatingPresent"][int(data[7])]
     ByPassPresent = status_data["ByPassPresent"][int(data[8])]
