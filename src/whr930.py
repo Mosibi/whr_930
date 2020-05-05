@@ -489,7 +489,7 @@ def get_bypass_control():
         publish_message(
             msg=ByPassCorrection, mqtt_path="house/2/attic/wtw/bypass_correction"
         )
-        publish_message(msg=SummerMode, mqtt_path="house/2/attic/wtw/summermode")
+        publish_message(msg=SummerMode, mqtt_path="house/2/attic/wtw/summer_mode")
 
         debug_msg(
             "ByPassFactor: {}, ByPassStep: {}, ByPassCorrection: {}, SummerMode: {}".format(
