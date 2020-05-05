@@ -489,6 +489,12 @@ def get_preheating_status():
         "PreHeatingValveStatus": {0: "Closed", 1: "Open", "2": "Unknown"},
         "FrostProtectionActive": {0: False, 1: True},
         "PreHeatingActive": {0: False, 1: True},
+        "FrostProtectionLevel": {
+            0: "GuaranteedProtection",
+            1: "HighProtection",
+            2: "NominalProtection",
+            3: "Economy",
+        },
     }
 
     packet = create_packet([0x00, 0xE1])
@@ -500,6 +506,8 @@ def get_preheating_status():
         PreHeatingValveStatus = status_data["PreHeatingValveStatus"][int(data[7], 16)]
         FrostProtectionActive = status_data["FrostProtectionActive"][int(data[8], 16)]
         PreHeatingActive = status_data["PreHeatingActive"][int(data[9], 16)]
+        FrostProtectionMinutes = int(data[10], 16) + int(data[11], 16)
+        FrostProtectionLevel = status_data["FrostProtectionLevel"][int(data[12], 16)]
 
         publish_message(
             msg=PreHeatingValveStatus, mqtt_path="house/2/attic/wtw/preheating_valve"
@@ -511,10 +519,22 @@ def get_preheating_status():
         publish_message(
             msg=PreHeatingActive, mqtt_path="house/2/attic/wtw/preheating_state"
         )
+        publish_message(
+            msg=FrostProtectionMinutes,
+            mqtt_path="house/2/attic/wtw/frost_protection_minutes",
+        )
+        publish_message(
+            msg=FrostProtectionLevel,
+            mqtt_path="house/2/attic/wtw/frost_protection_level",
+        )
 
         debug_msg(
-            "PreHeatingValveStatus: {}, FrostProtectionActive: {}, PreHeatingActive: {}".format(
-                PreHeatingValveStatus, FrostProtectionActive, PreHeatingActive
+            "PreHeatingValveStatus: {}, FrostProtectionActive: {}, PreHeatingActive: {}, FrostProtectionMinutes: {}, FrostProtectionLevel: {}".format(
+                PreHeatingValveStatus,
+                FrostProtectionActive,
+                PreHeatingActive,
+                FrostProtectionMinutes,
+                FrostProtectionLevel,
             )
         )
 
