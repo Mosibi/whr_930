@@ -40,6 +40,9 @@ def info_msg(message):
 
 
 def debug_data(serial_data):
+    if not debug is True:
+        return
+
     if debug_level > 0:
         data_len = len(serial_data)
         print("Data length   : {0}".format(len(serial_data)))
@@ -246,6 +249,7 @@ def set_ventilation_level(fan_level):
 
     packet = create_packet([0x00, 0x99], [fan_level + 1])
     data = serial_command(packet)
+    debug_data(data)
 
     if data:
         if data[0] == "07" and data[1] == "f3":
@@ -272,6 +276,7 @@ def set_comfort_temperature(temp):
 
     packet = create_packet([0x00, 0xD3], [calculated_temp])
     data = serial_command(packet)
+    debug_data(data)
 
     if data:
         if data[0] == "07" and data[1] == "f3":
@@ -296,6 +301,7 @@ def get_temp():
     """
     packet = create_packet([0x00, 0xD1])
     data = serial_command(packet)
+    debug_data(data)
 
     if data is None:
         warning_msg("get_temp function could not get serial data")
@@ -345,6 +351,7 @@ def get_ventilation_status():
 
     packet = create_packet([0x00, 0xCD])
     data = serial_command(packet)
+    debug_data(data)
 
     if data is None:
         warning_msg("get_ventilation_status function could not get serial data")
@@ -377,6 +384,7 @@ def get_fan_status():
     """
     packet = create_packet([0x00, 0x0B])
     data = serial_command(packet)
+    debug_data(data)
 
     if data is None:
         warning_msg("function get_fan_status could not get serial data")
@@ -412,6 +420,7 @@ def get_filter_status():
     """
     packet = create_packet([0x00, 0xD9])
     data = serial_command(packet)
+    debug_data(data)
 
     if data is None:
         warning_msg("get_filter_status function could not get serial data")
@@ -433,6 +442,7 @@ def get_valve_status():
     """
     packet = create_packet([0x00, 0x0D])
     data = serial_command(packet)
+    debug_data(data)
 
     if data is None:
         warning_msg("get_valve_status function could not get serial data")
@@ -469,6 +479,7 @@ def get_bypass_control():
     """
     packet = create_packet([0x00, 0xDF])
     data = serial_command(packet)
+    debug_data(data)
 
     if data is None:
         warning_msg("get_bypass_control function could not get serial data")
@@ -514,6 +525,7 @@ def get_preheating_status():
 
     packet = create_packet([0x00, 0xE1])
     data = serial_command(packet)
+    debug_data(data)
 
     if data is None:
         warning_msg("get_preheating_status function could not get serial data")
@@ -560,6 +572,7 @@ def get_operating_hours():
     """
     packet = create_packet([0x00, 0xDD])
     data = serial_command(packet)
+    debug_data(data)
 
     Level0Hours = int(data[7], 16) + int(data[8], 16) + int(data[9], 16)
     Level1Hours = int(data[10], 16) + int(data[11], 16) + int(data[12], 16)
@@ -613,6 +626,7 @@ def get_status():
 
     packet = create_packet([0x00, 0xD5])
     data = serial_command(packet)
+    debug_data(data)
 
     PreHeatingPresent = status_data["PreHeatingPresent"][int(data[7])]
     ByPassPresent = status_data["ByPassPresent"][int(data[8])]
