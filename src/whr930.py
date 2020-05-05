@@ -4,7 +4,7 @@
 """
 Interface with a StorkAir WHR930
 
-Publish every 10 seconds the status on a MQTT topic
+Publish every 5 seconds the status on a MQTT topic
 Listen on MQTT topic for commands to set the ventilation level
 """
 
@@ -228,8 +228,6 @@ def serial_command(cmd):
 
     while ser.inWaiting() > 0:
         data.append(ser.read(1).hex())
-
-    time.sleep(2)
 
     return validate_data(data)
 
@@ -746,7 +744,7 @@ def main():
             get_operating_hours()
             get_preheating_status()
 
-            time.sleep(8)
+            time.sleep(5)
             pass
         except KeyboardInterrupt:
             mqttc.loop_stop()
