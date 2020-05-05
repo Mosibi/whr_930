@@ -107,6 +107,15 @@ def create_packet(command, data=[]):
     Create a packet.
     Data length and checksum are automatically calculated and added to the packet.
     Start and end bits are added as well.
+
+    A packet is build up as follow:
+
+        Start                : 2 bytes (0x07 0xF0)
+        Command              : 2 bytes
+        Number of data bytes : 1 byte
+        Data bytes           : 0-n bytes
+        Checksum             : 1 byte
+        End                  : 2 bytes (0x07 0x0F)
     """
     packet = []
     packet.append(0x07)  # default start bit
@@ -425,14 +434,16 @@ def get_valve_status():
         warning_msg("get_valve_status function could not get serial data")
     else:
         ByPass = int(data[7], 16)
+        """
+        Status of the pre heating valve is exposed in get_preheating_status by the variable PreHeatingValveStatus
         PreHeating = int(data[8], 16)
+        """
         ByPassMotorCurrent = int(data[9], 16)
         PreHeatingMotorCurrent = int(data[10], 16)
 
         publish_message(
             msg=ByPass, mqtt_path="house/2/attic/wtw/valve_bypass_percentage"
         )
-        publish_message(msg=PreHeating, mqtt_path="house/2/attic/wtw/valve_preheating")
         publish_message(
             msg=ByPassMotorCurrent, mqtt_path="house/2/attic/wtw/bypass_motor_current"
         )
@@ -442,8 +453,8 @@ def get_valve_status():
         )
 
         debug_msg(
-            "ByPass: {}, PreHeating: {}, ByPassMotorCurrent: {}, PreHeatingMotorCurrent: {}".format(
-                ByPass, PreHeating, ByPassMotorCurrent, PreHeatingMotorCurrent
+            "ByPass: {}, ByPassMotorCurrent: {}, PreHeatingMotorCurrent: {}".format(
+                ByPass, ByPassMotorCurrent, PreHeatingMotorCurrent
             )
         )
 
