@@ -1,0 +1,213 @@
+---
+input_number:
+  set_wtw_ventilation_level:
+    name: Set ventilation level
+    initial: 2
+    min: 0
+    max: 3
+    step: 1
+    mode: slider
+
+automation:
+  - alias: Ventilation level slider moved in GUI
+    trigger:
+      platform: state
+      entity_id: input_number.set_wtw_ventilation_level
+    action:
+      service: mqtt.publish
+      data_template:
+        topic: house/2/attic/wtw/set_ventilation_level
+        retain: false
+        payload: "{{ states('input_number.set_wtw_ventilation_level') | int }}"
+
+sensor:
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/outside_air_temp"
+    name: "WTW Outside Temperature"
+    qos: 0
+    unit_of_measurement: '°C'
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/supply_air_temp"
+    name: "WTW Supply Temperature"
+    qos: 0
+    unit_of_measurement: '°C'
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/return_air_temp"
+    name: "WTW Return Temperature"
+    qos: 0
+    unit_of_measurement: '°C'
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/exhaust_air_temp"
+    name: "WTW Exhaust Temperature"
+    qos: 0
+    unit_of_measurement: '°C'
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/ventilation_level"
+    name: "WTW Ventilation Level"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/filter_status"
+    name: "WTW Filter Status"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/intake_fan_speed"
+    name: "WTW Intake Fan Speed"
+    qos: 0
+    unit_of_measurement: '%'
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/exhaust_fan_speed"
+    name: "WTW Exhaust Fan Speed"
+    qos: 0
+    unit_of_measurement: '%'
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/comfort_temp"
+    name: "WTW Comfort Temperature"
+    qos: 0
+    unit_of_measurement: '°C'
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/intake_fan_active"
+    name: "WTW Intake Fan Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/intake_fan_speed_rpm"
+    name: "WTW Intake Fan RPM"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/exhaust_fan_speed_rpm"
+    name: "WTW Exhaust Fan RPM"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/bypass_factor"
+    name: "WTW Bypass Factor"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/bypass_step"
+    name: "WTW Bypass Step"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/bypass_correction"
+    name: "WTW Bypass Correction"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/summer_mode"
+    name: "WTW Summer Mode"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/valve_bypass_percentage"
+    name: "WTW Bypass Valve"
+    qos: 0
+    unit_of_measurement: '%'
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/bypass_motor_current"
+    name: "WTW Motor Current Bypass"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/preheating_motor_current"
+    name: "WTW Motor Current Preheating"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/preheating_present"
+    name: "WTW Preheating Present"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/bypass_present"
+    name: "WTW Bypass Present"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/type"
+    name: "WTW Type"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/size"
+    name: "WTW Size"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/options_present"
+    name: "WTW Options Present"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/activestatus1"
+    name: "WTW Active Status 1"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/activestatus2"
+    name: "WTW Active Status 2"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/activestatus3"
+    name: "WTW Active Status 3"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/enthalpy_present"
+    name: "WTW Enthalpy Present"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/ewt_present"
+    name: "WTW EWT Present"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/level0_hours"
+    name: "WTW Level 0 Hours"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/level1_hours"
+    name: "WTW Level 1 Hours"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/level2_hours"
+    name: "WTW Level 2 Hours"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/level3_hours"
+    name: "WTW Level 3 Hours"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/frost_protection_hours"
+    name: "WTW Frost Protection Hours"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/preheating_hours"
+    name: "WTW Preheating Hours"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/bypass_open_hours"
+    name: "WTW Bypass Open Hours"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/filter_hours"
+    name: "WTW Filter Hours"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/preheating_valve"
+    name: "WTW Preheating Valve"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/preheating_valve"
+    name: "WTW Valve Preheating"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/frost_protection_active"
+    name: "WTW Frost Protection Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/preheating_state"
+    name: "WTW Preheating State"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/frost_protection_minutes"
+    name: "WTW Frost Protection Minutes"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/frost_protection_level"
+    name: "WTW Frost Protection Level"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/return_air_level"
+    name: "WTW Return Air Level"
+    qos: 0
+    unit_of_measurement: '%'
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/supply_air_level"
+    name: "WTW Supply Air Level"
+    qos: 0
+    unit_of_measurement: '%'

@@ -23,73 +23,19 @@ $ sudo systemctl start whr930.service
 
 ## Home Assistant configuration
 
-![Image](https://blog.mosibi.nl/assets/whr930_homeassistant_2.png)
+![Image](ha-screenshot.png)
+
+Copy src/wtw.yaml in the config/includes directory of your home assistant installation and modify the file configuration yaml to include the following:
+
+```lang=yaml
+
+homeassistant:
+  < ... your other config settings under homeassistant ... >
+  packages:
+    wtw: !include includes/wtw.yaml
 
 ```
-input_number:
-  set_wtw_ventilation_level:
-    name: Set ventilation level
-    initial: 2
-    min: 0
-    max: 3
-    step: 1
-    mode: box
 
-automation:
-  - alias: Ventilation level slider moved in GUI
-    trigger:
-      platform: state
-      entity_id: input_number.set_wtw_ventilation_level
-    action:
-      service: mqtt.publish
-      data_template:
-        topic: house/2/attic/wtw/set_ventilation_level
-        retain: false
-        payload: "{{ states('input_number.set_wtw_ventilation_level') | int }}"
+Add the content of src/lovelace.yaml to your current dashboard configuration, it will place the WTW configuration in a seperate tab. To get the nice picture working which is created by [Tim Jongsma](https://github.com/timjong93), clone the [lovelace repo](https://github.com/Mosibi/lovelace-wtw/tree/mosibi) and follow the installation instructions.
 
-customize:
-  sensor.wtw_intake_fan_speed:
-    icon: mdi:fan
-  sensor.wtw_exhaust_fan_speed:
-    icon: mdi:fan
-
-sensor:
-  - platform: mqtt
-    state_topic: "house/2/attic/wtw/outside_air_temp"
-    name: "WTW Outside Temperature"
-    qos: 0
-    unit_of_measurement: '°C'
-  - platform: mqtt
-    state_topic: "house/2/attic/wtw/supply_air_temp"
-    name: "WTW Supply Temperature"
-    qos: 0
-    unit_of_measurement: '°C'
-  - platform: mqtt
-    state_topic: "house/2/attic/wtw/return_air_temp"
-    name: "WTW Return Temperature"
-    qos: 0
-    unit_of_measurement: '°C'
-  - platform: mqtt
-    state_topic: "house/2/attic/wtw/exhaust_air_temp"
-    name: "WTW Exhaust Temperature"
-    qos: 0
-    unit_of_measurement: '°C'
-  - platform: mqtt
-    state_topic: "house/2/attic/wtw/ventilation_level"
-    name: "WTW Ventilation Level"
-    qos: 0
-  - platform: mqtt
-    state_topic: "house/2/attic/wtw/filter_status"
-    name: "WTW Filter Status"
-    qos: 0
-  - platform: mqtt
-    state_topic: "house/2/attic/wtw/intake_fan_speed"
-    name: "WTW Intake Fan Speed"
-    qos: 0
-    unit_of_measurement: '%'
-  - platform: mqtt
-    state_topic: "house/2/attic/wtw/exhaust_fan_speed"
-    name: "WTW Exhaust Fan Speed"
-    qos: 0
-    unit_of_measurement: '%'
-```
+*Note: the lovelace repo links points to my own fork of Tim's code. I created a pull request for his version to make it compatible with my code. When that PR is accepted, I will use his version.*
