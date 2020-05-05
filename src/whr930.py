@@ -356,6 +356,12 @@ def get_ventilation_status():
         FanLevel = int(data[15], 16) - 1
         IntakeFanActive = status_data["IntakeFanActive"][int(data[16], 16)]
 
+        publish_message(
+            msg=ReturnAirLevel, mqtt_path="house/2/attic/wtw/return_air_level"
+        )
+        publish_message(
+            msg=SupplyAirLevel, mqtt_path="house/2/attic/wtw/supply_air_level"
+        )
         publish_message(msg=FanLevel, mqtt_path="house/2/attic/wtw/ventilation_level")
         publish_message(
             msg=IntakeFanActive, mqtt_path="house/2/attic/wtw/intake_fan_active"
