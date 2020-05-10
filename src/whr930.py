@@ -235,6 +235,25 @@ def serial_command(cmd):
     return validate_data(data)
 
 
+def status_8bit(inp):
+    """
+    Return the status of each bit in a 8 byte status
+    """
+    idx = 7
+    matches = {}
+
+    for num in (2 ** p for p in range(idx, -1, -1)):
+        if ((inp - num) > 0) or ((inp - num) == 0):
+            inp = inp - num
+            matches[idx] = True
+        else:
+            matches[idx] = False
+
+        idx -= 1
+
+    return matches
+
+
 def set_ventilation_level(fan_level):
     """
     Command: 0x00 0x99
@@ -624,6 +643,30 @@ def get_status():
         "EWTPresent": {0: False, 1: "Managed", 2: "Unmanaged"},
     }
 
+    active1_status_data = {
+        0: "P10",
+        1: "P11",
+        2: "P12",
+        3: "P13",
+        4: "P14",
+        5: "P15",
+        6: "P16",
+        7: "P17",
+    }
+
+    active2_status_data = {0: "P18", 1: "P19"}
+
+    active3_status_data = {
+        0: "P90",
+        1: "P91",
+        2: "P92",
+        3: "P93",
+        4: "P94",
+        5: "P95",
+        6: "P96",
+        7: "P97",
+    }
+
     packet = create_packet([0x00, 0xD5])
     data = serial_command(packet)
     debug_data(data)
@@ -633,32 +676,41 @@ def get_status():
     Type = status_data["Type"][int(data[9])]
     Size = status_data["Size"][int(data[10])]
     OptionsPresent = status_data["OptionsPresent"][int(data[11])]
-    ActiveStatus1 = int(
-        data[13]
-    )  # (0x01 = P10 ... 0x80 = P17) Info about this?, please share it with me (richard@mosibi.nl)
-    ActiveStatus2 = int(
-        data[14]
-    )  # (0x01 = P18 / 0x02 = P19) Info about this?, please share it with me (richard@mosibi.nl)
-    ActiveStatus3 = int(
-        data[15]
-    )  # (0x01 = P90 ... 0x40 = P96) Info about this?, please share it with me (richard@mosibi.nl)
+    ActiveStatus1 = int(data[13])  # (0x01 = P10 ... 0x80 = P17)
+    ActiveStatus2 = int(data[14])  # (0x01 = P18 / 0x02 = P19)
+    ActiveStatus3 = int(data[15])  # (0x01 = P90 ... 0x80 = P97)
     EnthalpyPresent = status_data["EnthalpyPresent"][int(data[16])]
     EWTPresent = status_data["EWTPresent"][int(data[17])]
 
     debug_msg(
-        "PreHeatingPresent: {}, ByPassPresent: {}, Type: {}, Size: {}, OptionsPresent: {}, ActiveStatus1: {}, ActiveStatus2: {}, ActiveStatus3: {}, EnthalpyPresent: {}, EWTPresent: {}".format(
+        "PreHeatingPresent: {}, ByPassPresent: {}, Type: {}, Size: {}, OptionsPresent: {}, EnthalpyPresent: {}, EWTPresent: {}".format(
             PreHeatingPresent,
             ByPassPresent,
             Type,
             Size,
             OptionsPresent,
-            ActiveStatus1,
-            ActiveStatus2,
-            ActiveStatus3,
             EnthalpyPresent,
             EWTPresent,
         )
     )
+
+    for key, value in status_8bit(ActiveStatus1).items():
+        topic = "house/2/attic/wtw/{}_active".format(active1_status_data[key])
+        debug_msg("{}: {}".format(topic, value))
+        publish_message(msg=value, mqtt_path=topic)
+
+    for key, value in status_8bit(ActiveStatus2).items():
+        try:
+            topic = "house/2/attic/wtw/{}_active".format(active2_status_data[key])
+            debug_msg("{}: {}".format(topic, value))
+            publish_message(msg=value, mqtt_path=topic)
+        except KeyError:
+            pass
+
+    for key, value in status_8bit(ActiveStatus3).items():
+        topic = "house/2/attic/wtw/{}_active".format(active3_status_data[key])
+        debug_msg("{}: {}".format(topic, value))
+        publish_message(msg=value, mqtt_path=topic)
 
     publish_message(
         msg=PreHeatingPresent, mqtt_path="house/2/attic/wtw/preheating_present"
@@ -667,9 +719,6 @@ def get_status():
     publish_message(msg=Type, mqtt_path="house/2/attic/wtw/type")
     publish_message(msg=Size, mqtt_path="house/2/attic/wtw/size")
     publish_message(msg=OptionsPresent, mqtt_path="house/2/attic/wtw/options_present")
-    publish_message(msg=ActiveStatus1, mqtt_path="house/2/attic/wtw/activestatus1")
-    publish_message(msg=ActiveStatus2, mqtt_path="house/2/attic/wtw/activestatus2")
-    publish_message(msg=ActiveStatus3, mqtt_path="house/2/attic/wtw/activestatus3")
     publish_message(msg=EnthalpyPresent, mqtt_path="house/2/attic/wtw/enthalpy_present")
     publish_message(msg=EWTPresent, mqtt_path="house/2/attic/wtw/ewt_present")
 
