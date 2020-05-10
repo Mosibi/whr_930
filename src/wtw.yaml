@@ -211,3 +211,75 @@ sensor:
     name: "WTW Supply Air Level"
     qos: 0
     unit_of_measurement: '%'
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P10_active"
+    name: "WTW P10 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P11_active"
+    name: "WTW P11 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P12_active"
+    name: "WTW P12 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P13_active"
+    name: "WTW P13 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P14_active"
+    name: "WTW P14 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P15_active"
+    name: "WTW P15 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P16_active"
+    name: "WTW P16 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P17_active"
+    name: "WTW P17 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P18_active"
+    name: "WTW P18 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P19_active"
+    name: "WTW P19 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P90_active"
+    name: "WTW P90 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P91_active"
+    name: "WTW P91 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P92_active"
+    name: "WTW P92 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P93_active"
+    name: "WTW P93 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P94_active"
+    name: "WTW P94 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P95_active"
+    name: "WTW P95 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P96_active"
+    name: "WTW P96 Active"
+    qos: 0
+  - platform: mqtt
+    state_topic: "house/2/attic/wtw/P97_active"
+    name: "WTW P97 Active"
+    qos: 0
