@@ -36,6 +36,13 @@ homeassistant:
 
 ```
 
-Add the content of src/lovelace.yaml to your current dashboard configuration, it will place the WTW configuration in a seperate tab. To get the nice picture working which is created by [Tim Jongsma](https://github.com/timjong93), clone the [lovelace repo](https://github.com/Mosibi/lovelace-wtw/tree/mosibi) and follow the installation instructions.
+Add the content of src/lovelace.yaml to your current dashboard configuration, it will place the WTW configuration in a seperate tab.
 
-*Note: the lovelace repo links points to my own fork of Tim's code. I created a pull request for his version to make it compatible with my code. When that PR is accepted, I will use his version.*
+
+### External resources
+I've extended the possibilities of the standard Lovelace interface using multiple plugins. Visit those pages and follow the installation instructions for them:
+
+* [lovelace-wtw](https://github.com/Mosibi/lovelace-wtw/tree/mosibi) : Nice graphical flow overview, created by [Tim Jongsma](https://github.com/timjong93)
+* [lovelace-fold-entity-row](https://github.com/thomasloven/lovelace-fold-entity-row) : Use to fold in the P status overview
+
+*Note: the lovelace-wtw repo links points to my own fork of Tim's code. I created a pull request for his version to make it compatible with my code. When that PR is accepted, I will use his version.*
