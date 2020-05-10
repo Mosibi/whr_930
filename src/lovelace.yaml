@@ -1,7 +1,4 @@
-  - title: WTW
-    icon: 'mdi:fan'
-    path: wtw
-    badges: []
+  - badges: []
     cards:
       - entities:
           - entity: sensor.wtw_type
@@ -25,37 +22,50 @@
           - entity: sensor.wtw_preheating_present
             icon: 'mdi:checkbox-blank-circle-outline'
             name: Preheating present
+          - entities:
+              - sensor.wtw_p10_active
+              - sensor.wtw_p11_active
+              - sensor.wtw_p12_active
+              - sensor.wtw_p13_active
+              - sensor.wtw_p14_active
+              - sensor.wtw_p15_active
+              - sensor.wtw_p16_active
+              - sensor.wtw_p17_active
+              - sensor.wtw_p18_active
+              - sensor.wtw_p19_active
+              - sensor.wtw_p90_active
+              - sensor.wtw_p91_active
+              - sensor.wtw_p92_active
+              - sensor.wtw_p93_active
+              - sensor.wtw_p94_active
+              - sensor.wtw_p95_active
+              - sensor.wtw_p96_active
+              - sensor.wtw_p97_active
+            head:
+              label: 'Active states (P#)'
+              type: section
+            type: 'custom:fold-entity-row'
           - type: divider
           - entity: sensor.wtw_filter_status
             icon: 'mdi:filter'
             name: Filter
-          - entity: sensor.wtw_active_status_1
-            name: Status 1
-            icon: 'mdi:chevron-right-box-outline'
-          - entity: sensor.wtw_active_status_2
-            name: Status 2
-            icon: 'mdi:chevron-right-box-outline'
-          - entity: sensor.wtw_active_status_3
-            name: Status 3
-            icon: 'mdi:chevron-right-box-outline'
           - entity: sensor.wtw_preheating_state
-            name: Preheating active
             icon: 'mdi:radiator'
+            name: Preheating active
           - entity: sensor.wtw_summer_mode
-            name: Summer mode
             icon: 'mdi:weather-sunny'
+            name: Summer mode
         title: WTW
         type: entities
       - type: 'custom:wtw-card'
-      - type: glance
-        title: Ventilation
+      - columns: 3
         entities:
           - entity: input_number.set_wtw_ventilation_level
+            icon: 'mdi:fan'
             name: Set level
-            icon: 'mdi:fan'
           - entity: sensor.wtw_return_air_level
-            name: Fan speed (%) return
             icon: 'mdi:fan'
+            name: Fan speed (%) return
           - entity: sensor.wtw_supply_air_level
             icon: 'mdi:fan'
             name: Fan speed (%) supply
@@ -68,10 +78,11 @@
           - entity: sensor.wtw_ventilation_level
             icon: 'mdi:fan'
             name: Current level
-        columns: 3
-        show_state: true
         show_icon: true
         show_name: true
+        show_state: true
+        title: Ventilation
+        type: glance
       - columns: 2
         entities:
           - entity: sensor.wtw_outside_temperature
@@ -84,30 +95,28 @@
             name: Return from house
         title: Temperatures
         type: glance
-      - type: entities
-        entities:
+      - entities:
           - entity: sensor.wtw_bypass_valve
+            icon: 'mdi:electric-switch'
             name: Valve
-            icon: 'mdi:electric-switch'
           - entity: sensor.wtw_bypass_correction
+            icon: 'mdi:electric-switch'
             name: Correction value
-            icon: 'mdi:electric-switch'
           - entity: sensor.wtw_bypass_factor
+            icon: 'mdi:electric-switch'
             name: Factor
-            icon: 'mdi:electric-switch'
           - entity: sensor.wtw_bypass_open_hours
+            icon: 'mdi:electric-switch'
             name: Open (hours)
-            icon: 'mdi:electric-switch'
           - entity: sensor.wtw_bypass_step
+            icon: 'mdi:electric-switch'
             name: Step
-            icon: 'mdi:electric-switch'
           - entity: sensor.wtw_motor_current_bypass
-            name: Motor current
             icon: 'mdi:electric-switch'
+            name: Motor current
         title: Bypass
-      - type: entities
-        title: Preheating / Frost protection
-        entities:
+        type: entities
+      - entities:
           - entity: sensor.wtw_motor_current_preheating
             name: Preheating motor current
           - entity: sensor.wtw_preheating_hours
@@ -125,3 +134,8 @@
             name: Frost protection level
           - entity: sensor.wtw_frost_protection_minutes
             name: Frost protection (minutes)
+        title: Preheating / Frost protection
+        type: entities
+    icon: 'mdi:fan'
+    path: wtw
+    title: WTW
