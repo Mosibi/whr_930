@@ -72,10 +72,12 @@ sensor:
     state_topic: "house/2/attic/wtw/intake_fan_speed_rpm"
     name: "WTW Intake Fan RPM"
     qos: 0
+    unit_of_measurement: 'rpm'
   - platform: mqtt
     state_topic: "house/2/attic/wtw/exhaust_fan_speed_rpm"
     name: "WTW Exhaust Fan RPM"
     qos: 0
+    unit_of_measurement: 'rpm'
   - platform: mqtt
     state_topic: "house/2/attic/wtw/bypass_factor"
     name: "WTW Bypass Factor"
@@ -149,34 +151,42 @@ sensor:
     state_topic: "house/2/attic/wtw/level0_hours"
     name: "WTW Level 0 Hours"
     qos: 0
+    unit_of_measurement: 'hr'
   - platform: mqtt
     state_topic: "house/2/attic/wtw/level1_hours"
     name: "WTW Level 1 Hours"
     qos: 0
+    unit_of_measurement: 'hr'
   - platform: mqtt
     state_topic: "house/2/attic/wtw/level2_hours"
     name: "WTW Level 2 Hours"
     qos: 0
+    unit_of_measurement: 'hr'
   - platform: mqtt
     state_topic: "house/2/attic/wtw/level3_hours"
     name: "WTW Level 3 Hours"
     qos: 0
+    unit_of_measurement: 'hr'
   - platform: mqtt
     state_topic: "house/2/attic/wtw/frost_protection_hours"
     name: "WTW Frost Protection Hours"
     qos: 0
+    unit_of_measurement: 'hr'
   - platform: mqtt
     state_topic: "house/2/attic/wtw/preheating_hours"
     name: "WTW Preheating Hours"
     qos: 0
+    unit_of_measurement: 'hr'
   - platform: mqtt
     state_topic: "house/2/attic/wtw/bypass_open_hours"
     name: "WTW Bypass Open Hours"
     qos: 0
+    unit_of_measurement: 'hr'
   - platform: mqtt
     state_topic: "house/2/attic/wtw/filter_hours"
     name: "WTW Filter Hours"
     qos: 0
+    unit_of_measurement: 'hr'
   - platform: mqtt
     state_topic: "house/2/attic/wtw/preheating_valve"
     name: "WTW Preheating Valve"
@@ -197,6 +207,7 @@ sensor:
     state_topic: "house/2/attic/wtw/frost_protection_minutes"
     name: "WTW Frost Protection Minutes"
     qos: 0
+    unit_of_measurement: 'min'
   - platform: mqtt
     state_topic: "house/2/attic/wtw/frost_protection_level"
     name: "WTW Frost Protection Level"
