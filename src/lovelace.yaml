@@ -60,9 +60,6 @@
       - type: 'custom:wtw-card'
       - columns: 3
         entities:
-          - entity: input_number.set_wtw_ventilation_level
-            icon: 'mdi:fan'
-            name: Set level
           - entity: sensor.wtw_return_air_level
             icon: 'mdi:fan'
             name: Fan speed (%) return
@@ -116,6 +113,11 @@
             name: Motor current
         title: Bypass
         type: entities
+      - type: entities
+        entities:
+          - entity: input_number.set_wtw_ventilation_level
+          - entity: input_number.set_wtw_comfort_temperature
+        title: Settings
       - entities:
           - entity: sensor.wtw_motor_current_preheating
             name: Preheating motor current
