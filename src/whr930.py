@@ -217,7 +217,7 @@ def validate_data(data):
                 return stripped_data
         else:
             warning_msg(
-                "The length of the data we recieved from the serial port is {}, it should be minimal 10 bytes".format(
+                "The length of the data we received from the serial port is {}, it should be minimal 10 bytes".format(
                     len(data)
                 )
             )
@@ -299,7 +299,7 @@ def set_comfort_temperature(temperature):
                 temperature
             )
         )
-        return
+        return None
 
     packet = create_packet([0x00, 0xD3], [calculated_temp])
     data = serial_command(packet)
@@ -330,44 +330,47 @@ def get_temp():
     data = serial_command(packet)
     debug_data(data)
 
-    if data is None:
-        warning_msg("get_temp function could not get serial data")
-    else:
-        """
-        The default comfort temperature of the WHR930 is 20c
+    try:
+        if data is None:
+            warning_msg("get_temp function could not get serial data")
+        else:
+            """
+            The default comfort temperature of the WHR930 is 20c
 
-        Zehnder advises to let it on 20c, but if you want you change it, to
-        set it to 21c in the winter and 15c in the summer.
-        """
-        ComfortTemp = int(data[7], 16) / 2.0 - 20
-        OutsideAirTemp = int(data[8], 16) / 2.0 - 20
-        SupplyAirTemp = int(data[9], 16) / 2.0 - 20
-        ReturnAirTemp = int(data[10], 16) / 2.0 - 20
-        ExhaustAirTemp = int(data[11], 16) / 2.0 - 20
+            Zehnder advises to let it on 20c, but if you want you change it, to
+            set it to 21c in the winter and 15c in the summer.
+            """
+            ComfortTemp = int(data[7], 16) / 2.0 - 20
+            OutsideAirTemp = int(data[8], 16) / 2.0 - 20
+            SupplyAirTemp = int(data[9], 16) / 2.0 - 20
+            ReturnAirTemp = int(data[10], 16) / 2.0 - 20
+            ExhaustAirTemp = int(data[11], 16) / 2.0 - 20
 
-        publish_message(msg=ComfortTemp, mqtt_path="house/2/attic/wtw/comfort_temp")
-        publish_message(
-            msg=OutsideAirTemp, mqtt_path="house/2/attic/wtw/outside_air_temp"
-        )
-        publish_message(
-            msg=SupplyAirTemp, mqtt_path="house/2/attic/wtw/supply_air_temp"
-        )
-        publish_message(
-            msg=ReturnAirTemp, mqtt_path="house/2/attic/wtw/return_air_temp"
-        )
-        publish_message(
-            msg=ExhaustAirTemp, mqtt_path="house/2/attic/wtw/exhaust_air_temp"
-        )
-
-        debug_msg(
-            "ComfortTemp: {0}, OutsideAirTemp: {1}, SupplyAirTemp: {2}, ReturnAirTemp: {3}, ExhaustAirTemp: {4}".format(
-                ComfortTemp,
-                OutsideAirTemp,
-                SupplyAirTemp,
-                ReturnAirTemp,
-                ExhaustAirTemp,
+            publish_message(msg=ComfortTemp, mqtt_path="house/2/attic/wtw/comfort_temp")
+            publish_message(
+                msg=OutsideAirTemp, mqtt_path="house/2/attic/wtw/outside_air_temp"
             )
-        )
+            publish_message(
+                msg=SupplyAirTemp, mqtt_path="house/2/attic/wtw/supply_air_temp"
+            )
+            publish_message(
+                msg=ReturnAirTemp, mqtt_path="house/2/attic/wtw/return_air_temp"
+            )
+            publish_message(
+                msg=ExhaustAirTemp, mqtt_path="house/2/attic/wtw/exhaust_air_temp"
+            )
+
+            debug_msg(
+                "ComfortTemp: {0}, OutsideAirTemp: {1}, SupplyAirTemp: {2}, ReturnAirTemp: {3}, ExhaustAirTemp: {4}".format(
+                    ComfortTemp,
+                    OutsideAirTemp,
+                    SupplyAirTemp,
+                    ReturnAirTemp,
+                    ExhaustAirTemp,
+                )
+            )
+    except IndexError:
+        warning_msg("get_temp ignoring incomplete message")
 
 
 def get_ventilation_status():
@@ -380,29 +383,34 @@ def get_ventilation_status():
     data = serial_command(packet)
     debug_data(data)
 
-    if data is None:
-        warning_msg("get_ventilation_status function could not get serial data")
-    else:
-        ReturnAirLevel = int(data[13], 16)
-        SupplyAirLevel = int(data[14], 16)
-        FanLevel = int(data[15], 16) - 1
-        IntakeFanActive = status_data["IntakeFanActive"][int(data[16], 16)]
+    try:
+        if data is None:
+            warning_msg("get_ventilation_status function could not get serial data")
+        else:
+            ReturnAirLevel = int(data[13], 16)
+            SupplyAirLevel = int(data[14], 16)
+            FanLevel = int(data[15], 16) - 1
+            IntakeFanActive = status_data["IntakeFanActive"][int(data[16], 16)]
 
-        publish_message(
-            msg=ReturnAirLevel, mqtt_path="house/2/attic/wtw/return_air_level"
-        )
-        publish_message(
-            msg=SupplyAirLevel, mqtt_path="house/2/attic/wtw/supply_air_level"
-        )
-        publish_message(msg=FanLevel, mqtt_path="house/2/attic/wtw/ventilation_level")
-        publish_message(
-            msg=IntakeFanActive, mqtt_path="house/2/attic/wtw/intake_fan_active"
-        )
-        debug_msg(
-            "ReturnAirLevel: {}, SupplyAirLevel: {}, FanLevel: {}, IntakeFanActive: {}".format(
-                ReturnAirLevel, SupplyAirLevel, FanLevel, IntakeFanActive
+            publish_message(
+                msg=ReturnAirLevel, mqtt_path="house/2/attic/wtw/return_air_level"
             )
-        )
+            publish_message(
+                msg=SupplyAirLevel, mqtt_path="house/2/attic/wtw/supply_air_level"
+            )
+            publish_message(
+                msg=FanLevel, mqtt_path="house/2/attic/wtw/ventilation_level"
+            )
+            publish_message(
+                msg=IntakeFanActive, mqtt_path="house/2/attic/wtw/intake_fan_active"
+            )
+            debug_msg(
+                "ReturnAirLevel: {}, SupplyAirLevel: {}, FanLevel: {}, IntakeFanActive: {}".format(
+                    ReturnAirLevel, SupplyAirLevel, FanLevel, IntakeFanActive
+                )
+            )
+    except IndexError:
+        warning_msg("get_ventilation_status ignoring incomplete message")
 
 
 def get_fan_status():
@@ -413,32 +421,35 @@ def get_fan_status():
     data = serial_command(packet)
     debug_data(data)
 
-    if data is None:
-        warning_msg("function get_fan_status could not get serial data")
-    else:
-        IntakeFanSpeed = int(data[7], 16)
-        ExhaustFanSpeed = int(data[8], 16)
-        IntakeFanRPM = int(1875000 / (int(data[9], 16) * 256 + int(data[10], 16)))
-        ExhaustFanRPM = int(1875000 / (int(data[11], 16) * 256 + int(data[12], 16)))
+    try:
+        if data is None:
+            warning_msg("function get_fan_status could not get serial data")
+        else:
+            IntakeFanSpeed = int(data[7], 16)
+            ExhaustFanSpeed = int(data[8], 16)
+            IntakeFanRPM = int(1875000 / (int(data[9], 16) * 256 + int(data[10], 16)))
+            ExhaustFanRPM = int(1875000 / (int(data[11], 16) * 256 + int(data[12], 16)))
 
-        publish_message(
-            msg=IntakeFanSpeed, mqtt_path="house/2/attic/wtw/intake_fan_speed"
-        )
-        publish_message(
-            msg=ExhaustFanSpeed, mqtt_path="house/2/attic/wtw/exhaust_fan_speed"
-        )
-        publish_message(
-            msg=IntakeFanRPM, mqtt_path="house/2/attic/wtw/intake_fan_speed_rpm"
-        )
-        publish_message(
-            msg=ExhaustFanRPM, mqtt_path="house/2/attic/wtw/exhaust_fan_speed_rpm"
-        )
-
-        debug_msg(
-            "IntakeFanSpeed {0}%, ExhaustFanSpeed {1}%, IntakeAirRPM {2}, ExhaustAirRPM {3}".format(
-                IntakeFanSpeed, ExhaustFanSpeed, IntakeFanRPM, ExhaustFanRPM
+            publish_message(
+                msg=IntakeFanSpeed, mqtt_path="house/2/attic/wtw/intake_fan_speed"
             )
-        )
+            publish_message(
+                msg=ExhaustFanSpeed, mqtt_path="house/2/attic/wtw/exhaust_fan_speed"
+            )
+            publish_message(
+                msg=IntakeFanRPM, mqtt_path="house/2/attic/wtw/intake_fan_speed_rpm"
+            )
+            publish_message(
+                msg=ExhaustFanRPM, mqtt_path="house/2/attic/wtw/exhaust_fan_speed_rpm"
+            )
+
+            debug_msg(
+                "IntakeFanSpeed {0}%, ExhaustFanSpeed {1}%, IntakeAirRPM {2}, ExhaustAirRPM {3}".format(
+                    IntakeFanSpeed, ExhaustFanSpeed, IntakeFanRPM, ExhaustFanRPM
+                )
+            )
+    except IndexError:
+        warning_msg("get_fan_status ignoring incomplete message")
 
 
 def get_filter_status():
@@ -449,18 +460,23 @@ def get_filter_status():
     data = serial_command(packet)
     debug_data(data)
 
-    if data is None:
-        warning_msg("get_filter_status function could not get serial data")
-    else:
-        if int(data[18], 16) == 0:
-            FilterStatus = "Ok"
-        elif int(data[18], 16) == 1:
-            FilterStatus = "Full"
+    try:
+        if data is None:
+            warning_msg("get_filter_status function could not get serial data")
         else:
-            FilterStatus = "Unknown"
+            if int(data[18], 16) == 0:
+                FilterStatus = "Ok"
+            elif int(data[18], 16) == 1:
+                FilterStatus = "Full"
+            else:
+                FilterStatus = "Unknown"
 
-        publish_message(msg=FilterStatus, mqtt_path="house/2/attic/wtw/filter_status")
-        debug_msg("FilterStatus: {0}".format(FilterStatus))
+            publish_message(
+                msg=FilterStatus, mqtt_path="house/2/attic/wtw/filter_status"
+            )
+            debug_msg("FilterStatus: {0}".format(FilterStatus))
+    except IndexError:
+        warning_msg("get_filter_status ignoring incomplete message")
 
 
 def get_valve_status():
@@ -471,33 +487,37 @@ def get_valve_status():
     data = serial_command(packet)
     debug_data(data)
 
-    if data is None:
-        warning_msg("get_valve_status function could not get serial data")
-    else:
-        ByPass = int(data[7], 16)
-        """
-        Status of the pre heating valve is exposed in get_preheating_status by the variable PreHeatingValveStatus
-        PreHeating = int(data[8], 16)
-        """
-        ByPassMotorCurrent = int(data[9], 16)
-        PreHeatingMotorCurrent = int(data[10], 16)
+    try:
+        if data is None:
+            warning_msg("get_valve_status function could not get serial data")
+        else:
+            ByPass = int(data[7], 16)
+            """
+            Status of the pre heating valve is exposed in get_preheating_status by the variable PreHeatingValveStatus
+            PreHeating = int(data[8], 16)
+            """
+            ByPassMotorCurrent = int(data[9], 16)
+            PreHeatingMotorCurrent = int(data[10], 16)
 
-        publish_message(
-            msg=ByPass, mqtt_path="house/2/attic/wtw/valve_bypass_percentage"
-        )
-        publish_message(
-            msg=ByPassMotorCurrent, mqtt_path="house/2/attic/wtw/bypass_motor_current"
-        )
-        publish_message(
-            msg=PreHeatingMotorCurrent,
-            mqtt_path="house/2/attic/wtw/preheating_motor_current",
-        )
-
-        debug_msg(
-            "ByPass: {}, ByPassMotorCurrent: {}, PreHeatingMotorCurrent: {}".format(
-                ByPass, ByPassMotorCurrent, PreHeatingMotorCurrent
+            publish_message(
+                msg=ByPass, mqtt_path="house/2/attic/wtw/valve_bypass_percentage"
             )
-        )
+            publish_message(
+                msg=ByPassMotorCurrent,
+                mqtt_path="house/2/attic/wtw/bypass_motor_current",
+            )
+            publish_message(
+                msg=PreHeatingMotorCurrent,
+                mqtt_path="house/2/attic/wtw/preheating_motor_current",
+            )
+
+            debug_msg(
+                "ByPass: {}, ByPassMotorCurrent: {}, PreHeatingMotorCurrent: {}".format(
+                    ByPass, ByPassMotorCurrent, PreHeatingMotorCurrent
+                )
+            )
+    except IndexError:
+        warning_msg("get_valve_status ignoring incomplete message")
 
 
 def get_bypass_control():
@@ -508,30 +528,35 @@ def get_bypass_control():
     data = serial_command(packet)
     debug_data(data)
 
-    if data is None:
-        warning_msg("get_bypass_control function could not get serial data")
-    else:
-        ByPassFactor = int(data[9], 16)
-        ByPassStep = int(data[10], 16)
-        ByPassCorrection = int(data[11], 16)
-
-        if int(data[13], 16) == 1:
-            SummerMode = True
+    try:
+        if data is None:
+            warning_msg("get_bypass_control function could not get serial data")
         else:
-            SummerMode = False
+            ByPassFactor = int(data[9], 16)
+            ByPassStep = int(data[10], 16)
+            ByPassCorrection = int(data[11], 16)
 
-        publish_message(msg=ByPassFactor, mqtt_path="house/2/attic/wtw/bypass_factor")
-        publish_message(msg=ByPassStep, mqtt_path="house/2/attic/wtw/bypass_step")
-        publish_message(
-            msg=ByPassCorrection, mqtt_path="house/2/attic/wtw/bypass_correction"
-        )
-        publish_message(msg=SummerMode, mqtt_path="house/2/attic/wtw/summer_mode")
+            if int(data[13], 16) == 1:
+                SummerMode = True
+            else:
+                SummerMode = False
 
-        debug_msg(
-            "ByPassFactor: {}, ByPassStep: {}, ByPassCorrection: {}, SummerMode: {}".format(
-                ByPassFactor, ByPassStep, ByPassCorrection, SummerMode
+            publish_message(
+                msg=ByPassFactor, mqtt_path="house/2/attic/wtw/bypass_factor"
             )
-        )
+            publish_message(msg=ByPassStep, mqtt_path="house/2/attic/wtw/bypass_step")
+            publish_message(
+                msg=ByPassCorrection, mqtt_path="house/2/attic/wtw/bypass_correction"
+            )
+            publish_message(msg=SummerMode, mqtt_path="house/2/attic/wtw/summer_mode")
+
+            debug_msg(
+                "ByPassFactor: {}, ByPassStep: {}, ByPassCorrection: {}, SummerMode: {}".format(
+                    ByPassFactor, ByPassStep, ByPassCorrection, SummerMode
+                )
+            )
+    except IndexError:
+        warning_msg("get_bypass_control ignoring incomplete message")
 
 
 def get_preheating_status():
@@ -554,43 +579,53 @@ def get_preheating_status():
     data = serial_command(packet)
     debug_data(data)
 
-    if data is None:
-        warning_msg("get_preheating_status function could not get serial data")
-    else:
-        PreHeatingValveStatus = status_data["PreHeatingValveStatus"][int(data[7], 16)]
-        FrostProtectionActive = status_data["FrostProtectionActive"][int(data[8], 16)]
-        PreHeatingActive = status_data["PreHeatingActive"][int(data[9], 16)]
-        FrostProtectionMinutes = int(data[10], 16) + int(data[11], 16)
-        FrostProtectionLevel = status_data["FrostProtectionLevel"][int(data[12], 16)]
+    try:
+        if data is None:
+            warning_msg("get_preheating_status function could not get serial data")
+        else:
+            PreHeatingValveStatus = status_data["PreHeatingValveStatus"][
+                int(data[7], 16)
+            ]
+            FrostProtectionActive = status_data["FrostProtectionActive"][
+                int(data[8], 16)
+            ]
+            PreHeatingActive = status_data["PreHeatingActive"][int(data[9], 16)]
+            FrostProtectionMinutes = int(data[10], 16) + int(data[11], 16)
+            FrostProtectionLevel = status_data["FrostProtectionLevel"][
+                int(data[12], 16)
+            ]
 
-        publish_message(
-            msg=PreHeatingValveStatus, mqtt_path="house/2/attic/wtw/preheating_valve"
-        )
-        publish_message(
-            msg=FrostProtectionActive,
-            mqtt_path="house/2/attic/wtw/frost_protection_active",
-        )
-        publish_message(
-            msg=PreHeatingActive, mqtt_path="house/2/attic/wtw/preheating_state"
-        )
-        publish_message(
-            msg=FrostProtectionMinutes,
-            mqtt_path="house/2/attic/wtw/frost_protection_minutes",
-        )
-        publish_message(
-            msg=FrostProtectionLevel,
-            mqtt_path="house/2/attic/wtw/frost_protection_level",
-        )
-
-        debug_msg(
-            "PreHeatingValveStatus: {}, FrostProtectionActive: {}, PreHeatingActive: {}, FrostProtectionMinutes: {}, FrostProtectionLevel: {}".format(
-                PreHeatingValveStatus,
-                FrostProtectionActive,
-                PreHeatingActive,
-                FrostProtectionMinutes,
-                FrostProtectionLevel,
+            publish_message(
+                msg=PreHeatingValveStatus,
+                mqtt_path="house/2/attic/wtw/preheating_valve",
             )
-        )
+            publish_message(
+                msg=FrostProtectionActive,
+                mqtt_path="house/2/attic/wtw/frost_protection_active",
+            )
+            publish_message(
+                msg=PreHeatingActive, mqtt_path="house/2/attic/wtw/preheating_state"
+            )
+            publish_message(
+                msg=FrostProtectionMinutes,
+                mqtt_path="house/2/attic/wtw/frost_protection_minutes",
+            )
+            publish_message(
+                msg=FrostProtectionLevel,
+                mqtt_path="house/2/attic/wtw/frost_protection_level",
+            )
+
+            debug_msg(
+                "PreHeatingValveStatus: {}, FrostProtectionActive: {}, PreHeatingActive: {}, FrostProtectionMinutes: {}, FrostProtectionLevel: {}".format(
+                    PreHeatingValveStatus,
+                    FrostProtectionActive,
+                    PreHeatingActive,
+                    FrostProtectionMinutes,
+                    FrostProtectionLevel,
+                )
+            )
+    except IndexError:
+        warning_msg("get_preheating_status ignoring incomplete message")
 
 
 def get_operating_hours():
@@ -601,40 +636,49 @@ def get_operating_hours():
     data = serial_command(packet)
     debug_data(data)
 
-    Level0Hours = int(data[7], 16) + int(data[8], 16) + int(data[9], 16)
-    Level1Hours = int(data[10], 16) + int(data[11], 16) + int(data[12], 16)
-    Level2Hours = int(data[13], 16) + int(data[14], 16) + int(data[15], 16)
-    Level3Hours = int(data[24], 16) + int(data[25], 16) + int(data[26], 16)
-    FrostProtectionHours = int(data[16], 16) + int(data[17], 16)
-    PreHeatingHours = int(data[18], 16) + int(data[19], 16)
-    BypassOpenHours = int(data[14], 16) + int(data[15], 16)
-    FilterHours = int(data[22], 16) + int(data[23], 16)
+    try:
+        if data is None:
+            warning_msg("get_operating_hours function could not get serial data")
+        else:
+            Level0Hours = int(data[7], 16) + int(data[8], 16) + int(data[9], 16)
+            Level1Hours = int(data[10], 16) + int(data[11], 16) + int(data[12], 16)
+            Level2Hours = int(data[13], 16) + int(data[14], 16) + int(data[15], 16)
+            Level3Hours = int(data[24], 16) + int(data[25], 16) + int(data[26], 16)
+            FrostProtectionHours = int(data[16], 16) + int(data[17], 16)
+            PreHeatingHours = int(data[18], 16) + int(data[19], 16)
+            BypassOpenHours = int(data[14], 16) + int(data[15], 16)
+            FilterHours = int(data[22], 16) + int(data[23], 16)
 
-    publish_message(msg=Level0Hours, mqtt_path="house/2/attic/wtw/level0_hours")
-    publish_message(msg=Level1Hours, mqtt_path="house/2/attic/wtw/level1_hours")
-    publish_message(msg=Level2Hours, mqtt_path="house/2/attic/wtw/level2_hours")
-    publish_message(msg=Level3Hours, mqtt_path="house/2/attic/wtw/level3_hours")
-    publish_message(
-        msg=FrostProtectionHours, mqtt_path="house/2/attic/wtw/frost_protection_hours"
-    )
-    publish_message(msg=PreHeatingHours, mqtt_path="house/2/attic/wtw/preheating_hours")
-    publish_message(
-        msg=BypassOpenHours, mqtt_path="house/2/attic/wtw/bypass_open_hours"
-    )
-    publish_message(msg=FilterHours, mqtt_path="house/2/attic/wtw/filter_hours")
+            publish_message(msg=Level0Hours, mqtt_path="house/2/attic/wtw/level0_hours")
+            publish_message(msg=Level1Hours, mqtt_path="house/2/attic/wtw/level1_hours")
+            publish_message(msg=Level2Hours, mqtt_path="house/2/attic/wtw/level2_hours")
+            publish_message(msg=Level3Hours, mqtt_path="house/2/attic/wtw/level3_hours")
+            publish_message(
+                msg=FrostProtectionHours,
+                mqtt_path="house/2/attic/wtw/frost_protection_hours",
+            )
+            publish_message(
+                msg=PreHeatingHours, mqtt_path="house/2/attic/wtw/preheating_hours"
+            )
+            publish_message(
+                msg=BypassOpenHours, mqtt_path="house/2/attic/wtw/bypass_open_hours"
+            )
+            publish_message(msg=FilterHours, mqtt_path="house/2/attic/wtw/filter_hours")
 
-    debug_msg(
-        "Level0Hours: {}, Level1Hours: {}, Level2Hours: {}, Level3Hours: {}, FrostProtectionHours: {}, PreHeatingHours: {}, BypassOpenHours: {}, FilterHours: {}".format(
-            Level0Hours,
-            Level1Hours,
-            Level2Hours,
-            Level3Hours,
-            FrostProtectionHours,
-            PreHeatingHours,
-            BypassOpenHours,
-            FilterHours,
-        )
-    )
+            debug_msg(
+                "Level0Hours: {}, Level1Hours: {}, Level2Hours: {}, Level3Hours: {}, FrostProtectionHours: {}, PreHeatingHours: {}, BypassOpenHours: {}, FilterHours: {}".format(
+                    Level0Hours,
+                    Level1Hours,
+                    Level2Hours,
+                    Level3Hours,
+                    FrostProtectionHours,
+                    PreHeatingHours,
+                    BypassOpenHours,
+                    FilterHours,
+                )
+            )
+    except IndexError:
+        warning_msg("get_operating_hours ignoring incomplete message")
 
 
 def get_status():
@@ -679,56 +723,70 @@ def get_status():
     data = serial_command(packet)
     debug_data(data)
 
-    PreHeatingPresent = status_data["PreHeatingPresent"][int(data[7])]
-    ByPassPresent = status_data["ByPassPresent"][int(data[8])]
-    Type = status_data["Type"][int(data[9])]
-    Size = status_data["Size"][int(data[10])]
-    OptionsPresent = status_data["OptionsPresent"][int(data[11])]
-    ActiveStatus1 = int(data[13])  # (0x01 = P10 ... 0x80 = P17)
-    ActiveStatus2 = int(data[14])  # (0x01 = P18 / 0x02 = P19)
-    ActiveStatus3 = int(data[15])  # (0x01 = P90 ... 0x80 = P97)
-    EnthalpyPresent = status_data["EnthalpyPresent"][int(data[16])]
-    EWTPresent = status_data["EWTPresent"][int(data[17])]
+    try:
+        if data is None:
+            warning_msg("get_status function could not get serial data")
+        else:
+            PreHeatingPresent = status_data["PreHeatingPresent"][int(data[7])]
+            ByPassPresent = status_data["ByPassPresent"][int(data[8])]
+            Type = status_data["Type"][int(data[9])]
+            Size = status_data["Size"][int(data[10])]
+            OptionsPresent = status_data["OptionsPresent"][int(data[11])]
+            ActiveStatus1 = int(data[13])  # (0x01 = P10 ... 0x80 = P17)
+            ActiveStatus2 = int(data[14])  # (0x01 = P18 / 0x02 = P19)
+            ActiveStatus3 = int(data[15])  # (0x01 = P90 ... 0x80 = P97)
+            EnthalpyPresent = status_data["EnthalpyPresent"][int(data[16])]
+            EWTPresent = status_data["EWTPresent"][int(data[17])]
 
-    debug_msg(
-        "PreHeatingPresent: {}, ByPassPresent: {}, Type: {}, Size: {}, OptionsPresent: {}, EnthalpyPresent: {}, EWTPresent: {}".format(
-            PreHeatingPresent,
-            ByPassPresent,
-            Type,
-            Size,
-            OptionsPresent,
-            EnthalpyPresent,
-            EWTPresent,
-        )
-    )
+            debug_msg(
+                "PreHeatingPresent: {}, ByPassPresent: {}, Type: {}, Size: {}, OptionsPresent: {}, EnthalpyPresent: {}, EWTPresent: {}".format(
+                    PreHeatingPresent,
+                    ByPassPresent,
+                    Type,
+                    Size,
+                    OptionsPresent,
+                    EnthalpyPresent,
+                    EWTPresent,
+                )
+            )
 
-    for key, value in status_8bit(ActiveStatus1).items():
-        topic = "house/2/attic/wtw/{}_active".format(active1_status_data[key])
-        debug_msg("{}: {}".format(topic, value))
-        publish_message(msg=value, mqtt_path=topic)
+            for key, value in status_8bit(ActiveStatus1).items():
+                topic = "house/2/attic/wtw/{}_active".format(active1_status_data[key])
+                debug_msg("{}: {}".format(topic, value))
+                publish_message(msg=value, mqtt_path=topic)
 
-    for key, value in status_8bit(ActiveStatus2).items():
-        try:
-            topic = "house/2/attic/wtw/{}_active".format(active2_status_data[key])
-            debug_msg("{}: {}".format(topic, value))
-            publish_message(msg=value, mqtt_path=topic)
-        except KeyError:
-            pass
+            for key, value in status_8bit(ActiveStatus2).items():
+                try:
+                    topic = "house/2/attic/wtw/{}_active".format(
+                        active2_status_data[key]
+                    )
+                    debug_msg("{}: {}".format(topic, value))
+                    publish_message(msg=value, mqtt_path=topic)
+                except KeyError:
+                    pass
 
-    for key, value in status_8bit(ActiveStatus3).items():
-        topic = "house/2/attic/wtw/{}_active".format(active3_status_data[key])
-        debug_msg("{}: {}".format(topic, value))
-        publish_message(msg=value, mqtt_path=topic)
+            for key, value in status_8bit(ActiveStatus3).items():
+                topic = "house/2/attic/wtw/{}_active".format(active3_status_data[key])
+                debug_msg("{}: {}".format(topic, value))
+                publish_message(msg=value, mqtt_path=topic)
 
-    publish_message(
-        msg=PreHeatingPresent, mqtt_path="house/2/attic/wtw/preheating_present"
-    )
-    publish_message(msg=ByPassPresent, mqtt_path="house/2/attic/wtw/bypass_present")
-    publish_message(msg=Type, mqtt_path="house/2/attic/wtw/type")
-    publish_message(msg=Size, mqtt_path="house/2/attic/wtw/size")
-    publish_message(msg=OptionsPresent, mqtt_path="house/2/attic/wtw/options_present")
-    publish_message(msg=EnthalpyPresent, mqtt_path="house/2/attic/wtw/enthalpy_present")
-    publish_message(msg=EWTPresent, mqtt_path="house/2/attic/wtw/ewt_present")
+            publish_message(
+                msg=PreHeatingPresent, mqtt_path="house/2/attic/wtw/preheating_present"
+            )
+            publish_message(
+                msg=ByPassPresent, mqtt_path="house/2/attic/wtw/bypass_present"
+            )
+            publish_message(msg=Type, mqtt_path="house/2/attic/wtw/type")
+            publish_message(msg=Size, mqtt_path="house/2/attic/wtw/size")
+            publish_message(
+                msg=OptionsPresent, mqtt_path="house/2/attic/wtw/options_present"
+            )
+            publish_message(
+                msg=EnthalpyPresent, mqtt_path="house/2/attic/wtw/enthalpy_present"
+            )
+            publish_message(msg=EWTPresent, mqtt_path="house/2/attic/wtw/ewt_present")
+    except IndexError:
+        warning_msg("get_status ignoring incomplete message")
 
 
 def recon():
