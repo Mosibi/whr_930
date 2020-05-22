@@ -7,9 +7,17 @@ input_number:
     max: 3
     step: 1
     mode: slider
+  set_wtw_comfort_temperature:
+    name: Set comfort temperature
+    initial: 20
+    min: 12
+    max: 28
+    step: 1
+    mode: slider
+    unit_of_measurement: '°C'
 
 automation:
-  - alias: Ventilation level slider moved in GUI
+  - alias: Ventilation level changed in GUI
     trigger:
       platform: state
       entity_id: input_number.set_wtw_ventilation_level
@@ -19,6 +27,34 @@ automation:
         topic: house/2/attic/wtw/set_ventilation_level
         retain: false
         payload: "{{ states('input_number.set_wtw_ventilation_level') | int }}"
+  - alias: Set ventilation level slider
+    trigger:
+      platform: mqtt
+      topic: "house/2/attic/wtw/ventilation_level"
+    action:
+      service: input_number.set_value
+      data_template:
+        entity_id: input_number.set_wtw_ventilation_level
+        value: "{{ trigger.payload }}"
+  - alias: Comfort temperature changed in GUI
+    trigger:
+      platform: state
+      entity_id: input_number.set_wtw_comfort_temperature
+    action:
+      service: mqtt.publish
+      data_template:
+        topic: house/2/attic/wtw/set_comfort_temperature
+        retain: false
+        payload: "{{ states('input_number.set_wtw_comfort_temperature') | int }}"
+  - alias: Set comfort temperature slider
+    trigger:
+      platform: mqtt
+      topic: "house/2/attic/wtw/comfort_temp"
+    action:
+      service: input_number.set_value
+      data_template:
+        entity_id: input_number.set_wtw_comfort_temperature
+        value: "{{ trigger.payload }}"
 
 sensor:
   - platform: mqtt
@@ -222,6 +258,7 @@ sensor:
     name: "WTW Supply Air Level"
     qos: 0
     unit_of_measurement: '%'
+
   - platform: mqtt
     state_topic: "house/2/attic/wtw/P10_active"
     name: "WTW P10 Active"
