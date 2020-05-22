@@ -464,9 +464,9 @@ def get_filter_status():
         if data is None:
             warning_msg("get_filter_status function could not get serial data")
         else:
-            if int(data[18], 16) == 0:
+            if int(data[15], 16) == 0:
                 FilterStatus = "Ok"
-            elif int(data[18], 16) == 1:
+            elif int(data[15], 16) == 1:
                 FilterStatus = "Full"
             else:
                 FilterStatus = "Unknown"
