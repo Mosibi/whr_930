@@ -287,11 +287,19 @@ def set_ventilation_level(fan_level):
         )
 
 
-def set_comfort_temperature(temp):
+def set_comfort_temperature(temperature):
     """
     Command: 0x00 0xD3
     """
-    calculated_temp = int(temp + 20) * 2
+    calculated_temp = int(temperature + 20) * 2
+
+    if temperature < 12 or temperature > 28:
+        warning_msg(
+            "Changing the comfort temperature to {} is outside the specification of the range min 12 and max 28".format(
+                temperature
+            )
+        )
+        return
 
     packet = create_packet([0x00, 0xD3], [calculated_temp])
     data = serial_command(packet)
@@ -299,17 +307,17 @@ def set_comfort_temperature(temp):
 
     if data:
         if data[0] == "07" and data[1] == "f3":
-            info_msg("Changed comfort temperature to {0}".format(temp))
+            info_msg("Changed comfort temperature to {0}".format(temperature))
         else:
             warning_msg(
                 "Changing the comfort temperature to {0} went wrong, did not receive an ACK after the set command".format(
-                    temp
+                    temperature
                 )
             )
     else:
         warning_msg(
             "Changing the comfort temperature to {0} went wrong, did not receive an ACK after the set command".format(
-                temp
+                temperature
             )
         )
 
