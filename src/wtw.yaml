@@ -31,6 +31,9 @@ automation:
     trigger:
       platform: mqtt
       topic: "house/2/attic/wtw/ventilation_level"
+    condition:
+      condition: template
+      value_template: "{{ trigger.payload | int != states('input_number.set_wtw_ventilation_level') | int }}"
     action:
       service: input_number.set_value
       data_template:
@@ -50,6 +53,9 @@ automation:
     trigger:
       platform: mqtt
       topic: "house/2/attic/wtw/comfort_temp"
+    condition:
+      condition: template
+      value_template: "{{ trigger.payload | int != states('input_number.set_wtw_comfort_temperature') | int }}"
     action:
       service: input_number.set_value
       data_template:
