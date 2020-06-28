@@ -423,7 +423,7 @@ def get_fan_status():
 
     try:
         if data is None:
-            warning_msg("function get_fan_status could not get serial data")
+            warning_msg("get_fan_status function could not get serial data")
         else:
             IntakeFanSpeed = int(data[7], 16)
             ExhaustFanSpeed = int(data[8], 16)
