@@ -688,7 +688,7 @@ def get_status():
     status_data = {
         "PreHeatingPresent": {0: False, 1: True},
         "ByPassPresent": {0: False, 1: True},
-        "Type": {0: "Right", 1: "Left"},
+        "Type": {2: "Right", 1: "Left"},
         "Size": {1: "Large", 2: "Small"},
         "OptionsPresent": {0: False, 1: True},
         "EnthalpyPresent": {0: False, 1: True, 2: "PresentWithoutSensor"},
