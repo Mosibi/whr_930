@@ -24,11 +24,12 @@ def debug_msg(message):
 
 
 def warning_msg(message):
-    print(
-        "{0} WARNING: {1}".format(
-            time.strftime("%d-%m-%Y %H:%M:%S", time.gmtime()), message
+    if warning is True:
+        print(
+            "{0} WARNING: {1}".format(
+                time.strftime("%d-%m-%Y %H:%M:%S", time.gmtime()), message
+            )
         )
-    )
 
 
 def info_msg(message):
@@ -88,7 +89,7 @@ def on_message(client, userdata, message):
         temperature = float(message.payload)
         set_comfort_temperature(temperature)
     else:
-        warning_msg(
+        info_msg(
             "Received a message on topic {} where we do not have a handler for at the moment".format(
                 message.topic
             )
@@ -210,11 +211,24 @@ def validate_data(data):
                 the dataset, another 0x07 is inserted, but not added to the length
                 or the checksum
                 """
-                for i in range(7, 6 + dataset_len):
-                    if stripped_data[i] == "07" and stripped_data[i + 1] == "07":
-                        del stripped_data[i + 1]
+                try:
+                    for i in range(7, 6 + dataset_len):
+                        if stripped_data[i] == "07" and stripped_data[i + 1] == "07":
+                            del stripped_data[i + 1]
 
-                return stripped_data
+                    return stripped_data
+                except IndexError as _err:
+                    """
+                    The previous operation has thrown an IndexError which probably is
+                    the result of a missing second '07'. We just issue a warning message
+                    and return the stripped_data set
+                    """
+                    warning_msg(
+                        "validate_data function got an IndexError, but we continued processing the data: {}".format(
+                            _err
+                        )
+                    )
+
         else:
             warning_msg(
                 "The length of the data we received from the serial port is {}, it should be minimal 10 bytes".format(
@@ -259,7 +273,7 @@ def set_ventilation_level(fan_level):
     Command: 0x00 0x99
     """
     if fan_level < 0 or fan_level > 3:
-        warning_msg(
+        info_msg(
             "Ventilation level can be set to 0, 1, 2 and 4, but not {0}".format(
                 fan_level
             )
@@ -626,6 +640,10 @@ def get_preheating_status():
             )
     except IndexError:
         warning_msg("get_preheating_status ignoring incomplete message")
+    except KeyError as _err:
+        warning_msg(
+            "get_preheating_status incomplete message, missing a key: {}".format(_err)
+        )
 
 
 def get_operating_hours():
@@ -832,11 +850,13 @@ def on_disconnect(client, userdata, rc):
 def main():
     global debug
     global debug_level
+    global warning
     global mqttc
     global ser
 
     debug = False
     debug_level = 0
+    warning = False
 
     """Connect to the MQTT broker"""
     mqttc = mqtt.Client("whr930")
