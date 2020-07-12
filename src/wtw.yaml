@@ -1,4 +1,24 @@
 ---
+fan:
+  - platform: mqtt
+    name: "Ventilation"
+    state_topic: "house/2/attic/wtw/ventilation_level"
+    command_topic: "house/2/attic/wtw/set_ventilation_level"
+    speed_state_topic: "house/2/attic/wtw/ventilation_level"
+    speed_command_topic: "house/2/attic/wtw/set_ventilation_level"
+    state_value_template: "{{ states.sensor.wtw_ventilation_level.state }}"
+    speed_value_template: "{{ states.sensor.wtw_ventilation_level.state }}"
+    payload_off: "1"
+    payload_on: "3"
+    payload_low_speed: "1"
+    payload_medium_speed: "2"
+    payload_high_speed: "3"
+    speeds:
+      - "off"
+      - low
+      - medium
+      - high
+
 input_number:
   set_wtw_ventilation_level:
     name: Set ventilation level

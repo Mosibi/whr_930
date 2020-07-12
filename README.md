@@ -23,7 +23,7 @@ $ sudo systemctl start whr930.service
 
 ## Home Assistant configuration
 
-![Image](ha-screenshot.png)
+![Image](images/ha-screenshot.png)
 
 Copy src/wtw.yaml in the config/includes directory of your home assistant installation and modify the file configuration yaml to include the following:
 
@@ -36,7 +36,27 @@ homeassistant:
 
 ```
 
-Add the content of src/lovelace.yaml to your current dashboard configuration, it will place the WTW configuration in a seperate tab.
+Add the content of src/lovelace.yaml to your current dashboard configuration, it will place the WTW configuration in a separate tab.
+
+### Voice control integration
+When you integrate Amazon Alexa or Google Home or some other voice control method, it is possible to set the ventilation to a certain level using a voice command. In includes/wtw.yaml a virtual [fan](https://www.home-assistant.io/integrations/fan.mqtt) is created which can be called from the [emulated_hue](https://www.home-assistant.io/integrations/emulated_hue/) component or [Home Assistant Cloud](https://www.nabucasa.com/) to execute the voice command.
+
+To use with the emulated_hue component, add the following to your configuration.yaml and let Alexa do a discovery of the devices (*Alexa discover devices*). For Google Home users it may work, but there is a big warning on the emulated_hue page which states that *new users* have to use the [google_assistant](https://www.home-assistant.io/integrations/google_assistant/) or the [Home Assistant Cloud](https://www.home-assistant.io/integrations/cloud) integration
+
+```lang=yaml
+emulated_hue:
+  advertise_ip: <ip address>
+  expose_by_default: false
+  exposed_domains:
+    - fan
+  entities:
+    fan.ventilation:
+      hidden: false
+```
+
+[iamhaller](https://github.com/iamhaller) learned me that with Home Assistant Cloud you have to configure Google Home or Alexa after which you can expose the virtual fan.
+![Image](images/ha-cloud-ventilation.png)
+
 
 
 ### External resources
