@@ -745,16 +745,27 @@ def get_status():
         if data is None:
             warning_msg("get_status function could not get serial data")
         else:
-            PreHeatingPresent = status_data["PreHeatingPresent"][int(data[7])]
-            ByPassPresent = status_data["ByPassPresent"][int(data[8])]
-            Type = status_data["Type"][int(data[9])]
-            Size = status_data["Size"][int(data[10])]
-            OptionsPresent = status_data["OptionsPresent"][int(data[11])]
-            ActiveStatus1 = int(data[13])  # (0x01 = P10 ... 0x80 = P17)
-            ActiveStatus2 = int(data[14])  # (0x01 = P18 / 0x02 = P19)
-            ActiveStatus3 = int(data[15])  # (0x01 = P90 ... 0x80 = P97)
-            EnthalpyPresent = status_data["EnthalpyPresent"][int(data[16])]
-            EWTPresent = status_data["EWTPresent"][int(data[17])]
+            try:
+                PreHeatingPresent = status_data["PreHeatingPresent"][int(data[7])]
+                ByPassPresent = status_data["ByPassPresent"][int(data[8])]
+                Type = status_data["Type"][int(data[9])]
+                Size = status_data["Size"][int(data[10])]
+                OptionsPresent = status_data["OptionsPresent"][int(data[11])]
+                ActiveStatus1 = int(data[13])  # (0x01 = P10 ... 0x80 = P17)
+                ActiveStatus2 = int(data[14])  # (0x01 = P18 / 0x02 = P19)
+                ActiveStatus3 = int(data[15])  # (0x01 = P90 ... 0x80 = P97)
+                EnthalpyPresent = status_data["EnthalpyPresent"][int(data[16])]
+                EWTPresent = status_data["EWTPresent"][int(data[17])]
+            except ValueError as _value_err:
+                warning_msg(
+                    "get_status function received an inappropriate value: {}".format(
+                        _value_err
+                    )
+                )
+            except KeyError as _key_err:
+                warning_msg(
+                    "get status function missing key in dataset: {}".format(_key_err)
+                )
 
             debug_msg(
                 "PreHeatingPresent: {}, ByPassPresent: {}, Type: {}, Size: {}, OptionsPresent: {}, EnthalpyPresent: {}, EWTPresent: {}".format(
