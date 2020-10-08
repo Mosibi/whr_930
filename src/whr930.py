@@ -900,18 +900,15 @@ def main():
 
     mqttc.loop_start()
 
+    functions = [get_temp, get_ventilation_status, get_filter_status, get_fan_status, get_bypass_control, get_valve_status, get_status, get_operating_hours, get_preheating_status]
+
     while True:
         try:
-            get_temp()
-            get_ventilation_status()
-            get_filter_status()
-            get_fan_status()
-            get_bypass_control()
-            get_valve_status()
-            get_status()
-            get_operating_hours()
-            get_preheating_status()
-            handle_commands()
+            for func in functions:
+                if len(pending_commands) == 0:
+                    func()
+                else:
+                    handle_commands()
 
             time.sleep(5)
             pass
