@@ -12,6 +12,7 @@ import paho.mqtt.client as mqtt
 import time
 import sys
 import serial
+import config
 
 
 def debug_msg(message):
@@ -865,13 +866,13 @@ def main():
     global mqttc
     global ser
 
-    debug = False
+    debug = config.debug
     debug_level = 0
     warning = False
 
     """Connect to the MQTT broker"""
     mqttc = mqtt.Client("whr930")
-    mqttc.username_pw_set(username="myuser", password="mypass")
+    mqttc.username_pw_set(username=config.mqtt_username, password=config.mqtt_password)
 
     """Define the mqtt callbacks"""
     mqttc.on_connect = on_connect
@@ -879,11 +880,11 @@ def main():
     mqttc.on_disconnect = on_disconnect
 
     """Connect to the MQTT server"""
-    mqttc.connect("myhost/ip", port=1883, keepalive=45)
+    mqttc.connect(config.mqtt_ip, port=1883, keepalive=45)
 
     """Open the serial port"""
     ser = serial.Serial(
-        port="/dev/ttyUSB0",
+        port=config.serial_device,
         baudrate=9600,
         bytesize=serial.EIGHTBITS,
         parity=serial.PARITY_NONE,
