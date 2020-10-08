@@ -155,13 +155,25 @@ def calculate_checksum(data):
         if b == 0x07:
             found_07 = True
 
-    if checksum > 0xFF:
-        checksum -= 0xFF + 1
+        if checksum > 0xFF:
+            checksum -= 0xFF + 1
 
     return checksum
 
+def calculate_incoming_checksum(data_raw):
+    """The checksum over incoming data is calculated over the bytes starting from the default start bytes to the checksum value"""
+    int_data = []
+    for b in data_raw[4:-3]:
+        int_data.append(int.from_bytes(b, "big"))
+    return calculate_checksum(int_data)
 
-def validate_data(data):
+
+def validate_data(data_raw):
+    """Incoming data is in raw bytes. Convert to hex values for easier processing"""
+    data = []
+    for raw in data_raw:
+        data.append(raw.hex())
+
     if len(data) <= 1:
         """always expect a valid ACK at least"""
         return None
@@ -174,6 +186,11 @@ def validate_data(data):
         return data
     else:
         if len(data) >= 10:
+            """If the data is more than a regular ACK, validate the checksum"""
+            checksum = calculate_incoming_checksum(data_raw)
+            if (checksum != int.from_bytes(data_raw[-3], "big")):
+                warning_msg("Checksum doesn't match ({} vs {}). Message ignored".format(checksum, int.from_bytes(data_raw[-3], "big")))
+                return None
             """
             A valid response should be at least 10 bytes (ACK + response with data length = 0)
 
@@ -244,7 +261,7 @@ def serial_command(cmd):
     time.sleep(2)
 
     while ser.inWaiting() > 0:
-        data.append(ser.read(1).hex())
+        data.append(ser.read(1))
 
     return validate_data(data)
 
