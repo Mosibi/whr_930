@@ -812,9 +812,11 @@ def handle_commands():
         if message.topic == "house/2/attic/wtw/set_ventilation_level":
             fan_level = int(float(message.payload))
             set_ventilation_level(fan_level)
+            get_ventilation_status()
         elif message.topic == "house/2/attic/wtw/set_comfort_temperature":
             temperature = float(message.payload)
             set_comfort_temperature(temperature)
+            get_temp()
         else:
             info_msg(
                 "Received a message on topic {} where we do not have a handler for at the moment".format(
