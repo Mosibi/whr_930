@@ -867,8 +867,8 @@ def main():
     global ser
 
     debug = config.debug
-    debug_level = 0
-    warning = False
+    debug_level = config.debug_level
+    warning = config.warning
 
     """Connect to the MQTT broker"""
     mqttc = mqtt.Client("whr930")
@@ -880,7 +880,7 @@ def main():
     mqttc.on_disconnect = on_disconnect
 
     """Connect to the MQTT server"""
-    mqttc.connect(config.mqtt_ip, port=1883, keepalive=45)
+    mqttc.connect(config.mqtt_host, port=config.mqtt_port, keepalive=45)
 
     """Open the serial port"""
     ser = serial.Serial(
@@ -905,7 +905,7 @@ def main():
             get_operating_hours()
             get_preheating_status()
 
-            time.sleep(5)
+            time.sleep(config.update_interval_seconds)
             pass
         except KeyboardInterrupt:
             mqttc.loop_stop()
