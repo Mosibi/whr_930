@@ -44,29 +44,34 @@ def debug_data(serial_data):
     if not debug is True:
         return
 
-    if debug_level > 0:
+    if debug_level > 0 and not serial_data is None:
         data_len = len(serial_data)
-        print("Data length   : {0}".format(len(serial_data)))
-        print("Ack           : {0} {1}".format(serial_data[0], serial_data[1]))
-        print("Start         : {0} {1}".format(serial_data[2], serial_data[3]))
-        print("Command       : {0} {1}".format(serial_data[4], serial_data[5]))
-        print(
-            "Nr data bytes : {0} (integer {1})".format(
-                serial_data[6], int(serial_data[6], 16)
-            )
-        )
-
-        n = 1
-        while n <= int(serial_data[6], 16):
+        if data_len == 2 and serial_data[0] == "07" and serial_data[1] == "f3":
             print(
-                "Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}".format(
-                    n, serial_data[n + 6], int(serial_data[n + 6], 16), n + 6
+                "Recieved an ack packet: {0} {1}".format(serial_data[0], serial_data[1])
+            )
+        else:
+            print("Data length   : {0}".format(len(serial_data)))
+            print("Ack           : {0} {1}".format(serial_data[0], serial_data[1]))
+            print("Start         : {0} {1}".format(serial_data[2], serial_data[3]))
+            print("Command       : {0} {1}".format(serial_data[4], serial_data[5]))
+            print(
+                "Nr data bytes : {0} (integer {1})".format(
+                    serial_data[6], int(serial_data[6], 16)
                 )
             )
-            n += 1
 
-        print("Checksum      : {0}".format(serial_data[-2]))
-        print("End           : {0} {1}".format(serial_data[-2], serial_data[-1]))
+            n = 1
+            while n <= int(serial_data[6], 16):
+                print(
+                    "Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}".format(
+                        n, serial_data[n + 6], int(serial_data[n + 6], 16), n + 6
+                    )
+                )
+                n += 1
+
+            print("Checksum      : {0}".format(serial_data[-2]))
+            print("End           : {0} {1}".format(serial_data[-2], serial_data[-1]))
 
     if debug_level > 1:
         n = 0
@@ -160,6 +165,7 @@ def calculate_checksum(data):
 
     return checksum
 
+
 def calculate_incoming_checksum(data_raw):
     """The checksum over incoming data is calculated over the bytes starting from the default start bytes to the checksum value"""
     int_data = []
@@ -188,8 +194,12 @@ def validate_data(data_raw):
         if len(data) >= 10:
             """If the data is more than a regular ACK, validate the checksum"""
             checksum = calculate_incoming_checksum(data_raw)
-            if (checksum != int.from_bytes(data_raw[-3], "big")):
-                warning_msg("Checksum doesn't match ({} vs {}). Message ignored".format(checksum, int.from_bytes(data_raw[-3], "big")))
+            if checksum != int.from_bytes(data_raw[-3], "big"):
+                warning_msg(
+                    "Checksum doesn't match ({} vs {}). Message ignored".format(
+                        checksum, int.from_bytes(data_raw[-3], "big")
+                    )
+                )
                 return None
             """
             A valid response should be at least 10 bytes (ACK + response with data length = 0)
