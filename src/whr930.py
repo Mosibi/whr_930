@@ -823,6 +823,7 @@ def get_status():
     except IndexError:
         warning_msg("get_status ignoring incomplete message")
 
+
 def on_message(client, userdata, message):
     debug_msg(
         "message received: topic: {0}, payload: {1}, userdata: {2}".format(
@@ -831,6 +832,7 @@ def on_message(client, userdata, message):
     )
 
     pending_commands.append(message)
+
 
 def handle_commands():
 
@@ -850,7 +852,7 @@ def handle_commands():
                     message.topic
                 )
             )
-    
+
 
 def recon():
     try:
@@ -929,7 +931,17 @@ def main():
 
     mqttc.loop_start()
 
-    functions = [get_temp, get_ventilation_status, get_filter_status, get_fan_status, get_bypass_control, get_valve_status, get_status, get_operating_hours, get_preheating_status]
+    functions = [
+        get_temp,
+        get_ventilation_status,
+        get_filter_status,
+        get_fan_status,
+        get_bypass_control,
+        get_valve_status,
+        get_status,
+        get_operating_hours,
+        get_preheating_status,
+    ]
 
     while True:
         try:
