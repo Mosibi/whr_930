@@ -5,15 +5,22 @@ fan:
     state_topic: "house/2/attic/wtw/ventilation_level"
     command_topic: "house/2/attic/wtw/set_ventilation_level"
     speed_state_topic: "house/2/attic/wtw/ventilation_level"
-    speed_command_topic: "house/2/attic/wtw/set_ventilation_level"
     state_value_template: "{{ states.sensor.wtw_ventilation_level.state }}"
     speed_value_template: "{{ states.sensor.wtw_ventilation_level.state }}"
+    preset_mode_command_topic: "house/2/attic/wtw/set_ventilation_level"
+    preset_mode_command_template: >
+      {% if value == "low" %}
+          '"1"'
+      {% elif value == "medium" %}
+          '"2"'
+      {% elif value == "high" %}
+          '"3"'
+      {% else %}
+          '"1"'
+      {% endif %}
     payload_off: "1"
     payload_on: "3"
-    payload_low_speed: "1"
-    payload_medium_speed: "2"
-    payload_high_speed: "3"
-    speeds:
+    preset_modes:
       - "off"
       - low
       - medium
