@@ -61,23 +61,23 @@ def debug_data(serial_data):
                 )
             )
 
-            n = 1
-            while n <= int(serial_data[6], 16):
-                debug_msg(
-                    "Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}".format(
-                        n, serial_data[n + 6], int(serial_data[n + 6], 16), n + 6
+                n = 1
+                while n <= int(serial_data[6], 16):
+                    debug_msg(
+                        "Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}".format(
+                            n, serial_data[n + 6], int(serial_data[n + 6], 16), n + 6
+                        )
                     )
-                )
+                    n += 1
+
+                debug_msg("Checksum      : {0}".format(serial_data[-2]))
+                debug_msg("End           : {0} {1}".format(serial_data[-2], serial_data[-1]))
+
+        if debug_level > 1:
+            n = 0
+            while n < data_len:
+                debug_msg("serial_data {0}   : {1}".format(n, serial_data[n]))
                 n += 1
-
-            debug_msg("Checksum      : {0}".format(serial_data[-2]))
-            debug_msg("End           : {0} {1}".format(serial_data[-2], serial_data[-1]))
-
-    if debug_level > 1:
-        n = 0
-        while n < data_len:
-            debug_msg("serial_data {0}   : {1}".format(n, serial_data[n]))
-            n += 1
 
 
 def publish_message(msg, mqtt_path):
