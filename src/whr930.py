@@ -155,9 +155,18 @@ def calculate_incoming_checksum(data_raw):
 
 def validate_data(data_raw):
     """Incoming data is in raw bytes. Convert to hex values for easier processing"""
+
+    debug_msg(f"validate_data: raw = {data_raw}")
+
     data = []
     for raw in data_raw:
         data.append(raw.hex())
+    debug_msg(f"validate_data: hexes = {data}")
+
+    # int_data = []
+    # for b in data_raw:
+    #     int_data.append(int.from_bytes(b, "big"))
+    # debug_msg(f"validate data: integers {int_data}")
 
     if len(data) <= 1:
         """always expect a valid ACK at least"""
@@ -902,15 +911,15 @@ def main():
     global ser
     global pending_commands
 
-    debug = False
-    debug_level = 0
-    warning = False
+    debug = True
+    debug_level = 2
+    warning = True
 
     pending_commands = []
 
     """Connect to the MQTT broker"""
     mqttc = mqtt.Client("whr930")
-    mqttc.username_pw_set(username="myuser", password="mypass")
+    mqttc.username_pw_set(username="mqttpublisher", password="publishmqtt")
 
     """Define the mqtt callbacks"""
     mqttc.on_connect = on_connect
@@ -918,11 +927,11 @@ def main():
     mqttc.on_disconnect = on_disconnect
 
     """Connect to the MQTT server"""
-    mqttc.connect("myhost/ip", port=1883, keepalive=45)
+    mqttc.connect("192.168.178.37", port=1883, keepalive=45)
 
     """Open the serial port"""
     ser = serial.Serial(
-        port="/dev/ttyUSB0",
+        port="/dev/ttyUSB1",
         baudrate=9600,
         bytesize=serial.EIGHTBITS,
         parity=serial.PARITY_NONE,
