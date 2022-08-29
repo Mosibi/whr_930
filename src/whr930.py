@@ -159,7 +159,6 @@ def calculate_incoming_checksum(data_raw):
 
 def validate_data(data_raw):
     """Incoming data is in raw bytes. Convert to hex values for easier processing"""
-
     data = []
     for raw in data_raw:
         data.append(raw.hex())
