@@ -45,7 +45,7 @@ def debug_data(serial_data):
         return
 
     if not serial_data is None:
-        
+
         if debug_level > 0:
             data_len = len(serial_data)
             if data_len == 2 and serial_data[0] == "07" and serial_data[1] == "f3":
