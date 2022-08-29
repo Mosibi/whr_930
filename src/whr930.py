@@ -44,41 +44,45 @@ def debug_data(serial_data):
     if not debug is True:
         return
 
-    if debug_level > 0 and not serial_data is None:
-        data_len = len(serial_data)
-        if data_len == 2 and serial_data[0] == "07" and serial_data[1] == "f3":
-            debug_msg(
-                "Recieved an ack packet: {0} {1}".format(serial_data[0], serial_data[1])
-            )
-        else:
-            debug_msg("Data length   : {0}".format(len(serial_data)))
-            debug_msg("Ack           : {0} {1}".format(serial_data[0], serial_data[1]))
-            debug_msg("Start         : {0} {1}".format(serial_data[2], serial_data[3]))
-            debug_msg("Command       : {0} {1}".format(serial_data[4], serial_data[5]))
-            debug_msg(
-                "Nr data bytes : {0} (integer {1})".format(
-                    serial_data[6], int(serial_data[6], 16)
-                )
-            )
+    if not serial_data is None:
 
-            n = 1
-            while n <= int(serial_data[6], 16):
+        if debug_level > 0:
+            data_len = len(serial_data)
+            if data_len == 2 and serial_data[0] == "07" and serial_data[1] == "f3":
                 debug_msg(
-                    "Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}".format(
-                        n, serial_data[n + 6], int(serial_data[n + 6], 16), n + 6
+                    "Recieved an ack packet: {0} {1}".format(serial_data[0], serial_data[1])
+                )
+            else:
+                debug_msg("Data length   : {0}".format(len(serial_data)))
+                debug_msg("Ack           : {0} {1}".format(serial_data[0], serial_data[1]))
+                debug_msg("Start         : {0} {1}".format(serial_data[2], serial_data[3]))
+                debug_msg("Command       : {0} {1}".format(serial_data[4], serial_data[5]))
+                debug_msg(
+                    "Nr data bytes : {0} (integer {1})".format(
+                        serial_data[6], int(serial_data[6], 16)
                     )
                 )
+
+                n = 1
+                while n <= int(serial_data[6], 16):
+                    debug_msg(
+                        "Data byte {0}   : Hex: {1}, Int: {2}, Array #: {3}".format(
+                            n, serial_data[n + 6], int(serial_data[n + 6], 16), n + 6
+                        )
+                    )
+                    n += 1
+
+                debug_msg("Checksum      : {0}".format(serial_data[-2]))
+                debug_msg("End           : {0} {1}".format(serial_data[-2], serial_data[-1]))
+
+        if debug_level > 1:
+            n = 0
+            while n < data_len:
+                debug_msg("serial_data {0}   : {1}".format(n, serial_data[n]))
                 n += 1
 
-            debug_msg("Checksum      : {0}".format(serial_data[-2]))
-            debug_msg("End           : {0} {1}".format(serial_data[-2], serial_data[-1]))
-
-    if debug_level > 1:
-        n = 0
-        while n < data_len:
-            debug_msg("serial_data {0}   : {1}".format(n, serial_data[n]))
-            n += 1
-
+    else:
+        debug_msg("serial_data is empty")
 
 def publish_message(msg, mqtt_path):
     mqttc.publish(mqtt_path, payload=msg, qos=0, retain=True)
