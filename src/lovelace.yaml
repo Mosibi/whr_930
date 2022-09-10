@@ -2,25 +2,25 @@
     cards:
       - entities:
           - entity: sensor.wtw_type
-            icon: 'mdi:arrow-left-right-bold'
+            icon: mdi:arrow-left-right-bold
             name: Type
           - entity: sensor.wtw_size
-            icon: 'mdi:checkbox-blank-circle-outline'
+            icon: mdi:checkbox-blank-circle-outline
             name: Size
           - entity: sensor.wtw_bypass_present
-            icon: 'mdi:checkbox-blank-circle-outline'
+            icon: mdi:checkbox-blank-circle-outline
             name: Bypass present
           - entity: sensor.wtw_enthalpy_present
-            icon: 'mdi:checkbox-blank-circle-outline'
+            icon: mdi:checkbox-blank-circle-outline
             name: Enthalpy present
           - entity: sensor.wtw_ewt_present
-            icon: 'mdi:checkbox-blank-circle-outline'
+            icon: mdi:checkbox-blank-circle-outline
             name: EWT present
           - entity: sensor.wtw_options_present
-            icon: 'mdi:checkbox-blank-circle-outline'
+            icon: mdi:checkbox-blank-circle-outline
             name: Options present
           - entity: sensor.wtw_preheating_present
-            icon: 'mdi:checkbox-blank-circle-outline'
+            icon: mdi:checkbox-blank-circle-outline
             name: Preheating present
           - entities:
               - sensor.wtw_p10_active
@@ -42,38 +42,38 @@
               - sensor.wtw_p96_active
               - sensor.wtw_p97_active
             head:
-              label: 'Active states (P#)'
+              label: Active states (P#)
               type: section
-            type: 'custom:fold-entity-row'
+            type: custom:fold-entity-row
           - type: divider
           - entity: sensor.wtw_filter_status
-            icon: 'mdi:filter'
+            icon: mdi:filter
             name: Filter
           - entity: sensor.wtw_preheating_state
-            icon: 'mdi:radiator'
+            icon: mdi:radiator
             name: Preheating active
           - entity: sensor.wtw_summer_mode
-            icon: 'mdi:weather-sunny'
+            icon: mdi:weather-sunny
             name: Summer mode
         title: WTW
         type: entities
-      - type: 'custom:wtw-card'
+      - type: custom:wtw-card
       - columns: 3
         entities:
           - entity: sensor.wtw_return_air_level
-            icon: 'mdi:fan'
+            icon: mdi:fan
             name: Fan speed (%) return
           - entity: sensor.wtw_supply_air_level
-            icon: 'mdi:fan'
+            icon: mdi:fan
             name: Fan speed (%) supply
           - entity: sensor.wtw_exhaust_fan_rpm
-            icon: 'mdi:fan'
+            icon: mdi:fan
             name: Fan speed (rpm) exhaust
           - entity: sensor.wtw_intake_fan_rpm
-            icon: 'mdi:fan'
+            icon: mdi:fan
             name: Fan speed (rpm) intake
           - entity: sensor.wtw_ventilation_level
-            icon: 'mdi:fan'
+            icon: mdi:fan
             name: Current level
         show_icon: true
         show_name: true
@@ -94,30 +94,30 @@
         type: glance
       - entities:
           - entity: sensor.wtw_bypass_valve
-            icon: 'mdi:electric-switch'
+            icon: mdi:electric-switch
             name: Valve
           - entity: sensor.wtw_bypass_correction
-            icon: 'mdi:electric-switch'
+            icon: mdi:electric-switch
             name: Correction value
           - entity: sensor.wtw_bypass_factor
-            icon: 'mdi:electric-switch'
+            icon: mdi:electric-switch
             name: Factor
           - entity: sensor.wtw_bypass_open_hours
-            icon: 'mdi:electric-switch'
+            icon: mdi:electric-switch
             name: Open (hours)
           - entity: sensor.wtw_bypass_step
-            icon: 'mdi:electric-switch'
+            icon: mdi:electric-switch
             name: Step
           - entity: sensor.wtw_motor_current_bypass
-            icon: 'mdi:electric-switch'
+            icon: mdi:electric-switch
             name: Motor current
         title: Bypass
         type: entities
-      - type: entities
-        entities:
-          - entity: input_number.set_wtw_ventilation_level
+      - entities:
+          - entity: fan.wtw_ventilation
           - entity: input_number.set_wtw_comfort_temperature
         title: Settings
+        type: entities
       - entities:
           - entity: sensor.wtw_motor_current_preheating
             name: Preheating motor current
@@ -138,6 +138,6 @@
             name: Frost protection (minutes)
         title: Preheating / Frost protection
         type: entities
-    icon: 'mdi:fan'
+    icon: mdi:fan
     path: wtw
     title: WTW
