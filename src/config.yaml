@@ -1,0 +1,11 @@
+---
+# Serial port
+port: '/dev/ttyUSB0'
+
+# MQTT credentials
+mqtt_server: 'localhost'
+mqtt_username: ''
+mqtt_password: ''
+
+debug: False
+warning: False
