@@ -13,6 +13,7 @@ import time
 import sys
 import serial
 import yaml
+from pathlib import Path
 
 def debug_msg(message):
     if debug is True:
@@ -906,7 +907,7 @@ def main():
     global ser
     global pending_commands
 
-    with open("config.yaml", "r") as f:
+    with Path(__file__).with_name("config.yaml").open("r") as f:
         config = yaml.safe_load(f.read())
 
     debug = config["debug"]
