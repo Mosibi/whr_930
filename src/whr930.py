@@ -12,7 +12,8 @@ import paho.mqtt.client as mqtt
 import time
 import sys
 import serial
-
+import yaml
+from pathlib import Path
 
 def debug_msg(message):
     if debug is True:
@@ -906,15 +907,18 @@ def main():
     global ser
     global pending_commands
 
-    debug = False
+    with Path(__file__).with_name("config.yaml").open("r") as f:
+        config = yaml.safe_load(f.read())
+
+    debug = config["debug"]
     debug_level = 0
-    warning = False
+    warning = config["warning"]
 
     pending_commands = []
 
     """Connect to the MQTT broker"""
     mqttc = mqtt.Client("whr930")
-    mqttc.username_pw_set(username="myuser", password="mypass")
+    mqttc.username_pw_set(username=config["mqtt_username"], password=config["mqtt_password"])
 
     """Define the mqtt callbacks"""
     mqttc.on_connect = on_connect
@@ -922,11 +926,11 @@ def main():
     mqttc.on_disconnect = on_disconnect
 
     """Connect to the MQTT server"""
-    mqttc.connect("myhost/ip", port=1883, keepalive=45)
+    mqttc.connect(config["mqtt_server"], port=1883, keepalive=45)
 
     """Open the serial port"""
     ser = serial.Serial(
-        port="/dev/ttyUSB0",
+        port=config["port"],
         baudrate=9600,
         bytesize=serial.EIGHTBITS,
         parity=serial.PARITY_NONE,

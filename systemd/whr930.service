@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=idle
-ExecStart=/usr/bin/python3 -u /usr/local/bin/whr930.py
+ExecStart=/usr/bin/python3 -u /opt/wtw/whr930.py
 Restart=on-failure
 RestartSec=10
 

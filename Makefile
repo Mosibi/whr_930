@@ -3,10 +3,11 @@ all:
 	@echo "Use 'make install' to install whr930 on this system"
 
 install:
-	@cp src/whr930.py /usr/local/bin/whr930.py
+	@mkdir -p /opt/wtw
+	@cp src/whr930.py src/config.yaml /opt/wtw
 	@cp systemd/whr930.service /etc/systemd/system/whr930.service
 
-	@chmod 750 /usr/local/bin/whr930.py
+	@chmod 750 /opt/wtw/whr930.py /opt/wtw/config.yaml
 	@chmod 644 /etc/systemd/system/whr930.service
 
 	@systemctl daemon-reload
