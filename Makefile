@@ -3,7 +3,7 @@ all:
 	@echo "Use 'make install' to install whr930 on this system"
 
 install:
-	@mkdir /opt/wtw
+	@mkdir -p /opt/wtw
 	@cp src/whr930.py src/config.yaml /opt/wtw
 	@cp systemd/whr930.service /etc/systemd/system/whr930.service
 

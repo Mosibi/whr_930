@@ -33,7 +33,7 @@ git clone https://github.com/Mosibi/whr_930.git
 cd whr_930
 vi src/config.yaml
 docker build -t wtw-bridge .
-docker start wtw-bridge
+docker run -d --device=/dev/ttyUSB0 wtw-bridge
 ```
 
 Or include it in a `docker-compose.yml` as follows:
