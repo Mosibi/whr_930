@@ -10,6 +10,48 @@ input_number:
     mode: slider
     unit_of_measurement: '°C'
 
+automation:
+  - alias: WTW ventilation on low when nobody is home
+    description: WTW ventilation on low when nobody is home
+    trigger:
+    - platform: numeric_state
+      entity_id: zone.home
+      for:
+        hours: 0
+        minutes: 1
+        seconds: 0
+      below: 1
+    condition: []
+    action:
+    - service: fan.set_preset_mode
+      data:
+        preset_mode: low
+      target:
+        entity_id: fan.wtw_ventilation
+    mode: single
+  - alias: WTW ventilation on medium when someone is home
+    description: WTW ventilation on medium when someone is home
+    trigger:
+    - platform: numeric_state
+      entity_id: zone.home
+      for:
+        hours: 0
+        minutes: 1
+        seconds: 0
+      above: 0
+    condition:
+    - condition: not
+      conditions:
+      - condition: numeric_state
+        entity_id: sensor.wtw_ventilation_level
+        above: 2
+    action:
+    - service: fan.set_preset_mode
+      data:
+        preset_mode: medium
+      target:
+        entity_id: fan.wtw_ventilation
+
 mqtt:
   fan:
     - name: "WTW Ventilation"
