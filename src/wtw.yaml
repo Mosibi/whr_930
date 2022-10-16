@@ -69,7 +69,7 @@ mqtt:
         {% else %}
             1
         {% endif %}
-      payload_off: 1
+      payload_off: 0
       payload_on: 2
       preset_modes:
         - "low"
