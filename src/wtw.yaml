@@ -51,6 +51,16 @@ automation:
         preset_mode: medium
       target:
         entity_id: fan.wtw_ventilation
+  - alias: Comfort temperature changed in GUI
+    trigger:
+      platform: state
+      entity_id: input_number.set_wtw_comfort_temperature
+    action:
+      service: mqtt.publish
+      data_template:
+        topic: house/2/attic/wtw/set_comfort_temperature
+        retain: false
+        payload: "{{ states('input_number.set_wtw_comfort_temperature') | int }}"
 
 mqtt:
   fan:
