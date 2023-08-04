@@ -65,7 +65,7 @@ automation:
 mqtt:
   fan:
     - name: "WTW Ventilation"
-      unique_id: "fan_wtw_ventilation"
+      unique_id: "wtw_ventilation"
       state_topic: "house/2/attic/wtw/ventilation_level"
       command_topic: "house/2/attic/wtw/set_ventilation_level"
       preset_mode_command_topic: "house/2/attic/wtw/set_ventilation_level"
@@ -88,258 +88,258 @@ mqtt:
   sensor:
     - name: "WTW Outside Temperature"
       state_topic: "house/2/attic/wtw/outside_air_temp"
-      unique_id: "sensor_wtw_outside_air_temp"
+      unique_id: "wtw_outside_air_temp"
       qos: 0
       unit_of_measurement: '°C'
     - name: "WTW Supply Temperature"
       state_topic: "house/2/attic/wtw/supply_air_temp"
-      unique_id: "sensor_wtw_supply_air_temp"
+      unique_id: "wtw_supply_air_temp"
       qos: 0
       unit_of_measurement: '°C'
     - name: "WTW Return Temperature"
       state_topic: "house/2/attic/wtw/return_air_temp"
-      unique_id: "sensor_wtw_return_air_temp"
+      unique_id: "wtw_return_air_temp"
       qos: 0
       unit_of_measurement: '°C'
     - name: "WTW Exhaust Temperature"
       state_topic: "house/2/attic/wtw/exhaust_air_temp"
-      unique_id: "sensor_wtw_exhaust_air_temp"
+      unique_id: "wtw_exhaust_air_temp"
       qos: 0
       unit_of_measurement: '°C'
     - name: "WTW Ventilation Level"
       state_topic: "house/2/attic/wtw/ventilation_level"
-      unique_id: "sensor_wtw_ventilation_level"
+      unique_id: "wtw_ventilation_level"
       qos: 0
     - name: "WTW Filter Status"
       state_topic: "house/2/attic/wtw/filter_status"
-      unique_id: "sensor_wtw_filter_status"
+      unique_id: "wtw_filter_status"
       qos: 0
     - name: "WTW Intake Fan Speed"
       state_topic: "house/2/attic/wtw/intake_fan_speed"
-      unique_id: "sensor_wtw_intake_fan_speed"
+      unique_id: "wtw_intake_fan_speed"
       qos: 0
       unit_of_measurement: '%'
     - name: "WTW Exhaust Fan Speed"
       state_topic: "house/2/attic/wtw/exhaust_fan_speed"
-      unique_id: "sensor_wtw_exhaust_fan_speed"
+      unique_id: "wtw_exhaust_fan_speed"
       qos: 0
       unit_of_measurement: '%'
     - name: "WTW Comfort Temperature"
       state_topic: "house/2/attic/wtw/comfort_temp"
-      unique_id: "sensor_wtw_comfort_temp"
+      unique_id: "wtw_comfort_temp"
       qos: 0
       unit_of_measurement: '°C'
     - name: "WTW Intake Fan Active"
       state_topic: "house/2/attic/wtw/intake_fan_active"
-      unique_id: "sensor_wtw_intake_fan_active"
+      unique_id: "wtw_intake_fan_active"
       qos: 0
     - name: "WTW Intake Fan RPM"
       state_topic: "house/2/attic/wtw/intake_fan_speed_rpm"
-      unique_id: "sensor_wtw_intake_fan_speed_rpm"
+      unique_id: "wtw_intake_fan_speed_rpm"
       qos: 0
       unit_of_measurement: 'rpm'
     - name: "WTW Exhaust Fan RPM"
       state_topic: "house/2/attic/wtw/exhaust_fan_speed_rpm"
-      unique_id: "sensor_wtw_exhaust_fan_speed_rpm"
+      unique_id: "wtw_exhaust_fan_speed_rpm"
       qos: 0
       unit_of_measurement: 'rpm'
     - name: "WTW Bypass Factor"
       state_topic: "house/2/attic/wtw/bypass_factor"
-      unique_id: "sensor_wtw_bypass_factor"
+      unique_id: "wtw_bypass_factor"
       qos: 0
     - name: "WTW Bypass Step"
       state_topic: "house/2/attic/wtw/bypass_step"
-      unique_id: "sensor_wtw_bypass_step"
+      unique_id: "wtw_bypass_step"
       qos: 0
     - name: "WTW Bypass Correction"
       state_topic: "house/2/attic/wtw/bypass_correction"
-      unique_id: "sensor_wtw_bypass_correction"
+      unique_id: "wtw_bypass_correction"
       qos: 0
     - name: "WTW Summer Mode"
       state_topic: "house/2/attic/wtw/summer_mode"
-      unique_id: "sensor_wtw_summer_mode"
+      unique_id: "wtw_summer_mode"
       qos: 0
     - name: "WTW Bypass Valve"
       state_topic: "house/2/attic/wtw/valve_bypass_percentage"
-      unique_id: "sensor_wtw_valve_bypass_percentage"
+      unique_id: "wtw_valve_bypass_percentage"
       qos: 0
       unit_of_measurement: '%'
     - name: "WTW Motor Current Bypass"
       state_topic: "house/2/attic/wtw/bypass_motor_current"
-      unique_id: "sensor_wtw_bypass_motor_current"
+      unique_id: "wtw_bypass_motor_current"
       qos: 0
     - name: "WTW Motor Current Preheating"
       state_topic: "house/2/attic/wtw/preheating_motor_current"
-      unique_id: "sensor_wtw_preheating_motor_current"
+      unique_id: "wtw_preheating_motor_current"
       qos: 0
     - name: "WTW Preheating Present"
       state_topic: "house/2/attic/wtw/preheating_present"
-      unique_id: "sensor_wtw_preheating_present"
+      unique_id: "wtw_preheating_present"
       qos: 0
     - name: "WTW Bypass Present"
       state_topic: "house/2/attic/wtw/bypass_present"
-      unique_id: "sensor_wtw_bypass_present"
+      unique_id: "wtw_bypass_present"
       qos: 0
     - name: "WTW Type"
       state_topic: "house/2/attic/wtw/type"
-      unique_id: "sensor_wtw_type"
+      unique_id: "wtw_type"
       qos: 0
     - name: "WTW Size"
       state_topic: "house/2/attic/wtw/size"
-      unique_id: "sensor_wtw_size"
+      unique_id: "wtw_size"
       qos: 0
     - name: "WTW Options Present"
       state_topic: "house/2/attic/wtw/options_present"
-      unique_id: "sensor_wtw_options_present"
+      unique_id: "wtw_options_present"
       qos: 0
     - name: "WTW Enthalpy Present"
       state_topic: "house/2/attic/wtw/enthalpy_present"
-      unique_id: "sensor_wtw_enthalpy_present"
+      unique_id: "wtw_enthalpy_present"
       qos: 0
     - name: "WTW EWT Present"
       state_topic: "house/2/attic/wtw/ewt_present"
-      unique_id: "sensor_wtw_ewt_present"
+      unique_id: "wtw_ewt_present"
       qos: 0
     - name: "WTW Level 0 Hours"
       state_topic: "house/2/attic/wtw/level0_hours"
-      unique_id: "sensor_wtw_level0_hours"
+      unique_id: "wtw_level0_hours"
       qos: 0
       unit_of_measurement: 'hr'
     - name: "WTW Level 1 Hours"
       state_topic: "house/2/attic/wtw/level1_hours"
-      unique_id: "sensor_wtw_level1_hours"
+      unique_id: "wtw_level1_hours"
       qos: 0
       unit_of_measurement: 'hr'
     - name: "WTW Level 2 Hours"
       state_topic: "house/2/attic/wtw/level2_hours"
-      unique_id: "sensor_wtw_level2_hours"
+      unique_id: "wtw_level2_hours"
       qos: 0
       unit_of_measurement: 'hr'
     - name: "WTW Level 3 Hours"
       state_topic: "house/2/attic/wtw/level3_hours"
-      unique_id: "sensor_wtw_level3_hours"
+      unique_id: "wtw_level3_hours"
       qos: 0
       unit_of_measurement: 'hr'
     - name: "WTW Frost Protection Hours"
       state_topic: "house/2/attic/wtw/frost_protection_hours"
-      unique_id: "sensor_wtw_frost_protection_hours"
+      unique_id: "wtw_frost_protection_hours"
       qos: 0
       unit_of_measurement: 'hr'
     - name: "WTW Preheating Hours"
       state_topic: "house/2/attic/wtw/preheating_hours"
-      unique_id: "sensor_wtw_preheating_hours"
+      unique_id: "wtw_preheating_hours"
       qos: 0
       unit_of_measurement: 'hr'
     - name: "WTW Bypass Open Hours"
       state_topic: "house/2/attic/wtw/bypass_open_hours"
-      unique_id: "sensor_wtw_bypass_open_hours"
+      unique_id: "wtw_bypass_open_hours"
       qos: 0
       unit_of_measurement: 'hr'
     - name: "WTW Filter Hours"
       state_topic: "house/2/attic/wtw/filter_hours"
-      unique_id: "sensor_wtw_filter_hours"
+      unique_id: "wtw_filter_hours"
       qos: 0
       unit_of_measurement: 'hr'
     - name: "WTW Preheating Valve"
       state_topic: "house/2/attic/wtw/preheating_valve"
-      unique_id: "sensor_wtw_preheating_valve"
+      unique_id: "wtw_preheating_valve"
       qos: 0
     - name: "WTW Frost Protection Active"
       state_topic: "house/2/attic/wtw/frost_protection_active"
-      unique_id: "sensor_wtw_frost_protection_active"
+      unique_id: "wtw_frost_protection_active"
       qos: 0
     - name: "WTW Preheating State"
       state_topic: "house/2/attic/wtw/preheating_state"
-      unique_id: "sensor_wtw_preheating_state"
+      unique_id: "wtw_preheating_state"
       qos: 0
     - name: "WTW Frost Protection Minutes"
       state_topic: "house/2/attic/wtw/frost_protection_minutes"
-      unique_id: "sensor_wtw_frost_protection_minutes"
+      unique_id: "wtw_frost_protection_minutes"
       qos: 0
       unit_of_measurement: 'min'
     - name: "WTW Frost Protection Level"
       state_topic: "house/2/attic/wtw/frost_protection_level"
-      unique_id: "sensor_wtw_frost_protection_level"
+      unique_id: "wtw_frost_protection_level"
       qos: 0
     - name: "WTW Return Air Level"
       state_topic: "house/2/attic/wtw/return_air_level"
-      unique_id: "sensor_wtw_return_air_level"
+      unique_id: "wtw_return_air_level"
       qos: 0
       unit_of_measurement: '%'
     - name: "WTW Supply Air Level"
       state_topic: "house/2/attic/wtw/supply_air_level"
-      unique_id: "sensor_wtw_supply_air_level"
+      unique_id: "wtw_supply_air_level"
       qos: 0
       unit_of_measurement: '%'
     - name: "WTW P10 Active"
       state_topic: "house/2/attic/wtw/P10_active"
-      unique_id: "sensor_wtw_P10_active"
+      unique_id: "wtw_p10_active"
       qos: 0
     - name: "WTW P11 Active"
       state_topic: "house/2/attic/wtw/P11_active"
-      unique_id: "sensor_wtw_P11_active"
+      unique_id: "wtw_p11_active"
       qos: 0
     - name: "WTW P12 Active"
       state_topic: "house/2/attic/wtw/P12_active"
-      unique_id: "sensor_wtw_P12_active"
+      unique_id: "wtw_p12_active"
       qos: 0
     - name: "WTW P13 Active"
       state_topic: "house/2/attic/wtw/P13_active"
-      unique_id: "sensor_wtw_P13_active"
+      unique_id: "wtw_p13_active"
       qos: 0
     - name: "WTW P14 Active"
       state_topic: "house/2/attic/wtw/P14_active"
-      unique_id: "sensor_wtw_P14_active"
+      unique_id: "wtw_p14_active"
       qos: 0
     - name: "WTW P15 Active"
       state_topic: "house/2/attic/wtw/P15_active"
-      unique_id: "sensor_wtw_P15_active"
+      unique_id: "wtw_p15_active"
       qos: 0
     - name: "WTW P16 Active"
       state_topic: "house/2/attic/wtw/P16_active"
-      unique_id: "sensor_wtw_P16_active"
+      unique_id: "wtw_p16_active"
       qos: 0
     - name: "WTW P17 Active"
       state_topic: "house/2/attic/wtw/P17_active"
-      unique_id: "sensor_wtw_P17_active"
+      unique_id: "wtw_p17_active"
       qos: 0
     - name: "WTW P18 Active"
       state_topic: "house/2/attic/wtw/P18_active"
-      unique_id: "sensor_wtw_P18_active"
+      unique_id: "wtw_p18_active"
       qos: 0
     - name: "WTW P19 Active"
       state_topic: "house/2/attic/wtw/P19_active"
-      unique_id: "sensor_wtw_P19_active"
+      unique_id: "wtw_p19_active"
       qos: 0
     - name: "WTW P90 Active"
       state_topic: "house/2/attic/wtw/P90_active"
-      unique_id: "sensor_wtw_P90_active"
+      unique_id: "wtw_p90_active"
       qos: 0
     - name: "WTW P91 Active"
       state_topic: "house/2/attic/wtw/P91_active"
-      unique_id: "sensor_wtw_P91_active"
+      unique_id: "wtw_p91_active"
       qos: 0
     - name: "WTW P92 Active"
       state_topic: "house/2/attic/wtw/P92_active"
-      unique_id: "sensor_wtw_P92_active"
+      unique_id: "wtw_p92_active"
       qos: 0
     - name: "WTW P93 Active"
       state_topic: "house/2/attic/wtw/P93_active"
-      unique_id: "sensor_wtw_P93_active"
+      unique_id: "wtw_p93_active"
       qos: 0
     - name: "WTW P94 Active"
       state_topic: "house/2/attic/wtw/P94_active"
-      unique_id: "sensor_wtw_P94_active"
+      unique_id: "wtw_p94_active"
       qos: 0
     - name: "WTW P95 Active"
       state_topic: "house/2/attic/wtw/P95_active"
-      unique_id: "sensor_wtw_P95_active"
+      unique_id: "wtw_p95_active"
       qos: 0
     - name: "WTW P96 Active"
       state_topic: "house/2/attic/wtw/P96_active"
-      unique_id: "sensor_wtw_P96_active"
+      unique_id: "wtw_p96_active"
       qos: 0
     - name: "WTW P97 Active"
       state_topic: "house/2/attic/wtw/P97_active"
-      unique_id: "sensor_wtw_P97_active"
+      unique_id: "wtw_p97_active"
       qos: 0
