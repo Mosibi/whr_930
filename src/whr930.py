@@ -15,6 +15,7 @@ import serial
 import yaml
 from pathlib import Path
 
+
 def debug_msg(message):
     if debug is True:
         print(
@@ -51,13 +52,21 @@ def debug_data(serial_data):
             data_len = len(serial_data)
             if data_len == 2 and serial_data[0] == "07" and serial_data[1] == "f3":
                 debug_msg(
-                    "Recieved an ack packet: {0} {1}".format(serial_data[0], serial_data[1])
+                    "Recieved an ack packet: {0} {1}".format(
+                        serial_data[0], serial_data[1]
+                    )
                 )
             else:
                 debug_msg("Data length   : {0}".format(len(serial_data)))
-                debug_msg("Ack           : {0} {1}".format(serial_data[0], serial_data[1]))
-                debug_msg("Start         : {0} {1}".format(serial_data[2], serial_data[3]))
-                debug_msg("Command       : {0} {1}".format(serial_data[4], serial_data[5]))
+                debug_msg(
+                    "Ack           : {0} {1}".format(serial_data[0], serial_data[1])
+                )
+                debug_msg(
+                    "Start         : {0} {1}".format(serial_data[2], serial_data[3])
+                )
+                debug_msg(
+                    "Command       : {0} {1}".format(serial_data[4], serial_data[5])
+                )
                 debug_msg(
                     "Nr data bytes : {0} (integer {1})".format(
                         serial_data[6], int(serial_data[6], 16)
@@ -74,7 +83,9 @@ def debug_data(serial_data):
                     n += 1
 
                 debug_msg("Checksum      : {0}".format(serial_data[-2]))
-                debug_msg("End           : {0} {1}".format(serial_data[-2], serial_data[-1]))
+                debug_msg(
+                    "End           : {0} {1}".format(serial_data[-2], serial_data[-1])
+                )
 
         if debug_level > 1:
             n = 0
@@ -84,6 +95,7 @@ def debug_data(serial_data):
 
     else:
         debug_msg("serial_data is empty")
+
 
 def publish_message(msg, mqtt_path):
     mqttc.publish(mqtt_path, payload=msg, qos=0, retain=True)
@@ -267,7 +279,7 @@ def status_8bit(inp):
     idx = 7
     matches = {}
 
-    for num in (2 ** p for p in range(idx, -1, -1)):
+    for num in (2**p for p in range(idx, -1, -1)):
         if ((inp - num) > 0) or ((inp - num) == 0):
             inp = inp - num
             matches[idx] = True
@@ -440,7 +452,7 @@ def get_ventilation_status():
 
 def get_fan_status():
     """
-    Command: 0x00 0x99
+    Command: 0x00 0x0B
     """
     packet = create_packet([0x00, 0x0B])
     data = serial_command(packet)
@@ -829,6 +841,114 @@ def get_status():
         warning_msg("get_status ignoring incomplete message")
 
 
+def get_delay_timers():
+    """
+    Command: 0x00 0xC9
+    """
+
+    packet = create_packet([0x00, 0xC9])
+    data = serial_command(packet)
+    debug_data(data)
+
+    try:
+        if data is None:
+            warning_msg("get_delay_timers function could not get serial data")
+        else:
+            """
+            Number of minutes to delay after the badroom switch is set to high (3)
+            """
+            BathroomSwitchOnDelayMinutes = int(data[7], 16)
+
+            """
+            Number of minutes to delay after the badroom switch is set to normal (2)
+            """
+            BathroomSwitchOffDelayMinutes = int(data[8], 16)
+
+            """
+            Number of minutes where ventilation modes 3 will be kept if the WHR 930 is set
+            to 3 for a short moment (< 3 seconds)
+            """
+            L1SwitchOffDelayMinutes = int(data[9], 16)
+
+            """
+            Boost minutes
+
+            When "PARTY TIMER" is enabled, the unit will switch for this amount of minutes
+            to the high modus (3), after which is will go back to normal (2)
+            """
+            BoostVentilationMinutes = int(data[10], 16)
+
+            """
+            Number of weeks before a "Filter" warning is given. Default 16, minimal 10 and maximal 26.
+            """
+            FilterWarningWeeks = int(data[11], 16)
+
+            """
+            Number of minutes to go into high ventilation mode when the clock button on the RF reciever is
+            pressed SHORT (less then 2 seconds).
+            """
+            RFHighTimeShortMinutes = int(data[12], 16)
+
+            """
+            Number of minutes to go into high ventilation mode when the clock button on the RF reciever is
+            pressed LONG (more then 2 seconds).
+            """
+            RFHighTimeLongMinutes = int(data[13], 16)
+
+            """
+            Number of minutes after which the WHR will go back to normal (2) when the extractor hood switch is used
+            """
+            ExtractorHoodSwitchOffDelayMinutes = int(data[14], 16)
+
+            publish_message(
+                msg=BathroomSwitchOnDelayMinutes,
+                mqtt_path="house/2/attic/wtw/bathroom_switch_on_delay_minutes",
+            )
+            publish_message(
+                msg=BathroomSwitchOffDelayMinutes,
+                mqtt_path="house/2/attic/wtw/bathroom_switch_off_delay_minutes",
+            )
+            publish_message(
+                msg=L1SwitchOffDelayMinutes,
+                mqtt_path="house/2/attic/wtw/l1_switch_off_delay_minutes",
+            )
+            publish_message(
+                msg=BoostVentilationMinutes,
+                mqtt_path="house/2/attic/wtw/boost_ventilation_minutes",
+            )
+            publish_message(
+                msg=FilterWarningWeeks,
+                mqtt_path="house/2/attic/wtw/filter_warning_weeks",
+            )
+            publish_message(
+                msg=RFHighTimeShortMinutes,
+                mqtt_path="house/2/attic/wtw/rf_high_time_short_minutes",
+            )
+            publish_message(
+                msg=RFHighTimeLongMinutes,
+                mqtt_path="house/2/attic/wtw/rf_high_time_long_minutes",
+            )
+            publish_message(
+                msg=ExtractorHoodSwitchOffDelayMinutes,
+                mqtt_path="house/2/attic/wtw/extractor_hood_switch_off_delay_minutes",
+            )
+
+            debug_msg(
+                "BathroomSwitchOnDelayMinutes: {}, BathroomSwitchOffDelayMinutes: {}, L1SwitchOffDelayMinutes: {}, BoostVentilationMinutes: {}, FilterWarningWeeks: {}, RFHighTimeShortMinutes: {}, RFHighTimeLongMinutes: {}, ExtractorHoodSwitchOffDelayMinutes: {}".format(
+                    BathroomSwitchOnDelayMinutes,
+                    BathroomSwitchOffDelayMinutes,
+                    L1SwitchOffDelayMinutes,
+                    BoostVentilationMinutes,
+                    FilterWarningWeeks,
+                    RFHighTimeShortMinutes,
+                    RFHighTimeLongMinutes,
+                    ExtractorHoodSwitchOffDelayMinutes,
+                )
+            )
+    except IndexError:
+        warning_msg("get_delay_timers ignoring incomplete message")
+
+
 def on_message(client, userdata, message):
     debug_msg(
         "message received: topic: {0}, payload: {1}, userdata: {2}".format(
@@ -918,7 +1038,9 @@ def main():
 
     """Connect to the MQTT broker"""
     mqttc = mqtt.Client("whr930")
-    mqttc.username_pw_set(username=config["mqtt_username"], password=config["mqtt_password"])
+    mqttc.username_pw_set(
+        username=config["mqtt_username"], password=config["mqtt_password"]
+    )
 
     """Define the mqtt callbacks"""
     mqttc.on_connect = on_connect
@@ -949,13 +1071,14 @@ def main():
         get_status,
         get_operating_hours,
         get_preheating_status,
+        get_delay_timers,
     ]
 
     while True:
         try:
             for func in functions:
                 if len(pending_commands) == 0:
-                    debug_msg('Executing function {}'.format(func))
+                    debug_msg("Executing function {}".format(func))
                     func()
                 else:
                     handle_commands()
