@@ -346,32 +346,40 @@ mqtt:
     - name: "WTW Bathroom Switch On Delay Minutes"
       state_topic: "house/2/attic/wtw/bathroom_switch_on_delay_minutes"
       unique_id: "wtw_bathroom_switch_on_delay_minutes"
+      unit_of_measurement: 'min'
       qos: 0
     - name: "WTW Bathroom Switch Off Delay Minutes"
       state_topic: "house/2/attic/wtw/bathroom_switch_off_delay_minutes"
       unique_id: "wtw_bathroom_switch_off_delay_minutes"
       qos: 0
+      unit_of_measurement: 'min'
     - name: "WTW L1 Switch Off Delay Minutes"
       state_topic: "house/2/attic/wtw/l1_switch_off_delay_minutes"
       unique_id: "wtw_l1_switch_off_delay_minutes"
       qos: 0
+      unit_of_measurement: 'min'
     - name: "WTW Boost Ventilation Minutes"
       state_topic: "house/2/attic/wtw/boost_ventilation_minutes"
       unique_id: "wtw_boost_ventilation_minutes"
       qos: 0
-    - name: "WTW Filter Warning Weeks"
+      unit_of_measurement: 'min'
+    - name: "WTW Filter Warning"
       state_topic: "house/2/attic/wtw/filter_warning_weeks"
       unique_id: "wtw_filter_warning_weeks"
       qos: 0
+      unit_of_measurement: 'weeks'
     - name: "WTW RF High Time Short Minutes"
       state_topic: "house/2/attic/wtw/rf_high_time_short_minutes"
       unique_id: "wtw_rf_high_time_short_minutes"
       qos: 0
+      unit_of_measurement: 'min'
     - name: "WTW RF High Time Long Minutes"
       state_topic: "house/2/attic/wtw/rf_high_time_long_minutes"
       unique_id: "wtw_rf_high_time_long_minutes"
       qos: 0
+      unit_of_measurement: 'min'
     - name: "WTW Extractor Hood Switch Off Delay Minutes"
       state_topic: "house/2/attic/wtw/extractor_hood_switch_off_delay_minutes"
       unique_id: "wtw_extractor_hood_switch_off_delay_minutes"
       qos: 0
+      unit_of_measurement: 'min'
