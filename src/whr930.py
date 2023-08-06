@@ -850,6 +850,8 @@ def get_delay_timers():
     data = serial_command(packet)
     debug_data(data)
 
+    delay_values = {}
+
     try:
         if data is None:
             warning_msg("get_delay_timers function could not get serial data")
@@ -858,17 +860,22 @@ def get_delay_timers():
             Number of minutes to delay after the badroom switch is set to high (3)
             """
             BathroomSwitchOnDelayMinutes = int(data[7], 16)
+            delay_values["BathroomSwitchOnDelayMinutes"] = BathroomSwitchOnDelayMinutes
 
             """
             Number of minutes to delay after the badroom switch is set to normal (2)
             """
             BathroomSwitchOffDelayMinutes = int(data[8], 16)
+            delay_values[
+                "BathroomSwitchOffDelayMinutes"
+            ] = BathroomSwitchOffDelayMinutes
 
             """
             Number of minutes where ventilation modes 3 will be kept if the WHR 930 is set
             to 3 for a short moment (< 3 seconds)
             """
             L1SwitchOffDelayMinutes = int(data[9], 16)
+            delay_values["L1SwitchOffDelayMinutes"] = L1SwitchOffDelayMinutes
 
             """
             Boost minutes
@@ -877,28 +884,35 @@ def get_delay_timers():
             to the high modus (3), after which is will go back to normal (2)
             """
             BoostVentilationMinutes = int(data[10], 16)
+            delay_values["BoostVentilationMinutes"] = BoostVentilationMinutes
 
             """
             Number of weeks before a "Filter" warning is given. Default 16, minimal 10 and maximal 26.
             """
             FilterWarningWeeks = int(data[11], 16)
+            delay_values["FilterWarningWeeks"] = FilterWarningWeeks
 
             """
             Number of minutes to go into high ventilation mode when the clock button on the RF reciever is
             pressed SHORT (less then 2 seconds).
             """
             RFHighTimeShortMinutes = int(data[12], 16)
+            delay_values["RFHighTimeShortMinutes"] = RFHighTimeShortMinutes
 
             """
             Number of minutes to go into high ventilation mode when the clock button on the RF reciever is
             pressed LONG (more then 2 seconds).
             """
             RFHighTimeLongMinutes = int(data[13], 16)
+            delay_values["RFHighTimeLongMinutes"] = RFHighTimeLongMinutes
 
             """
             Number of minutes after which the WHR will go back to normal (2) when the extractor hood switch is used
             """
             ExtractorHoodSwitchOffDelayMinutes = int(data[14], 16)
+            delay_values[
+                "ExtractorHoodSwitchOffDelayMinutes"
+            ] = ExtractorHoodSwitchOffDelayMinutes
 
             publish_message(
                 msg=BathroomSwitchOnDelayMinutes,
@@ -947,6 +961,29 @@ def get_delay_timers():
             )
     except IndexError:
         warning_msg("get_delay_timers ignoring incomplete message")
+
+    """
+    Return the data to the calling function. The set_delay_timer function calls this function to get the most recent data
+    """
+    return delay_values
+
+
+def set_delay_timers(
+    BathroomSwitchOnDelayMinutes=None,
+    BathroomSwitchOffDelayMinutes=None,
+    L1SwitchOffDelayMinutes=None,
+    BoostVentilationMinutes=None,
+    FilterWarningWeeks=None,
+    RFHighTimeShortMinutes=None,
+    RFHighTimeLongMinutes=None,
+    ExtractorHoodSwitchOffDelayMinutes=None,
+):
+    """
+    Command: 0x00 0xCB
+    """
+
+    current_settings = get_delay_timers()
+    print("Current settings: {}".format(current_settings))
 
 
 def on_message(client, userdata, message):
@@ -1062,6 +1099,7 @@ def main():
     mqttc.loop_start()
 
     functions = [
+        set_delay_timers,
         get_temp,
         get_ventilation_status,
         get_filter_status,
