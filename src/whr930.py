@@ -297,7 +297,7 @@ def set_ventilation_level(fan_level):
     """
     if fan_level < 0 or fan_level > 3:
         info_msg(
-            "Ventilation level can be set to 0, 1, 2 and 4, but not {0}".format(
+            "Ventilation level can be set to 0, 1, 2 and 3, but not {0}".format(
                 fan_level
             )
         )
