@@ -207,7 +207,7 @@ def validate_data(data_raw):
             message_len = dataset_len + 10
             debug_msg("Message length is {}".format(message_len))
 
-            """ 
+            """
             Sometimes more data is captured on the serial port then we expect. We drop those extra
             bytes to get a clean data to work on
             """
@@ -356,6 +356,41 @@ def set_comfort_temperature(temperature):
             "Changing the comfort temperature to {0} went wrong, did not receive an ACK after the set command".format(
                 temperature
             )
+        )
+
+
+def set_default_fan_speed_levels():
+    """
+    Set the default fan speed levels for normal (regular) air volume.
+
+    Command: 0x00 0xCF
+
+    Byte 1: Exhaust speed (not present) (default 15%)
+    Byte 2: Exhaust speed (level 1) (default 35%)
+    Byte 3: Exhaust speed (level 2) (default 50%)
+    Byte 4: Intake speed (not present) (default 15%)
+    Byte 5: Intake speed (level 1) (default 35%)
+    Byte 6: Intake speed (level 2) (default 50%)
+    Byte 7: Exhaust speed (level 3) (default 70%)
+    Byte 8: Intake speed (level 3) (default 70%)
+    Byte 9: -
+    """
+
+    # 15 35 50 15 35 50 70 70 0
+    packet = create_packet([0x00, 0xCF], [0x0F, 0x23, 0x32, 0x0F, 0x23, 0x32, 0x46, 0x46, 0x00])
+    data = serial_command(packet)
+    debug_data(data)
+
+    if data:
+        if data[0] == "07" and data[1] == "f3":
+            info_msg("Changed fan speed levels")
+        else:
+            warning_msg(
+                "Changing the fan speed levels went wrong, did not receive an ACK after the set command"
+            )
+    else:
+        warning_msg(
+            "Changing the fan speed levels went wrong, did not receive an ACK after the set command"
         )
 
 
@@ -963,6 +998,7 @@ def handle_commands():
 
     while len(pending_commands) > 0:
         message = pending_commands.pop(0)
+
         if message.topic == "house/2/attic/wtw/set_ventilation_level":
             fan_level = int(float(message.payload))
             set_ventilation_level(fan_level)
@@ -971,6 +1007,9 @@ def handle_commands():
             temperature = float(message.payload)
             set_comfort_temperature(temperature)
             get_temp()
+        elif message.topic == "house/2/attic/wtw/set_default_fan_speed_levels":
+            set_default_fan_speed_levels()
+            get_fan_status()
         else:
             info_msg(
                 "Received a message on topic {} where we do not have a handler for at the moment".format(
@@ -998,6 +1037,7 @@ def topic_subscribe():
             [
                 ("house/2/attic/wtw/set_ventilation_level", 0),
                 ("house/2/attic/wtw/set_comfort_temperature", 0),
+                ("house/2/attic/wtw/set_default_fan_speed_levels", 0)
             ]
         )
         info_msg("Successfull subscribed to the MQTT topics")
