@@ -722,7 +722,7 @@ def get_operating_hours():
             Level3Hours = int(data[24], 16) + int(data[25], 16) + int(data[26], 16)
             FrostProtectionHours = int(data[16], 16) + int(data[17], 16)
             PreHeatingHours = int(data[18], 16) + int(data[19], 16)
-            BypassOpenHours = int(data[14], 16) + int(data[15], 16)
+            BypassOpenHours = int(data[20], 16) + int(data[21], 16)
             FilterHours = int(data[22], 16) + int(data[23], 16)
 
             publish_message(msg=Level0Hours, mqtt_path="house/2/attic/wtw/level0_hours")
